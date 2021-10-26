@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using InvoiceApi.Models;
 
 namespace InvoiceApi
 {
@@ -32,6 +34,8 @@ namespace InvoiceApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "InvoiceApi", Version = "v1" });
             });
+            services.AddDbContext<Context>(opt =>
+                                               opt.UseInMemoryDatabase("Invoices"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
