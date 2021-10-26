@@ -10,4 +10,5 @@ namespace InvoiceApi.Models
         public string Currency { get; set; }
         public double Amount { get; set; }
         public string Description { get; set; }
+    }
 }
