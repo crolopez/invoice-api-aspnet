@@ -29,7 +29,7 @@ namespace InvoiceApi.Controllers
 
         // GET: api/Invoice/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Invoice>> GetInvoice(long id)
+        public async Task<ActionResult<Invoice>> GetInvoice(string id)
         {
             var invoice = await _context.Invoices.FindAsync(id);
 
@@ -44,7 +44,7 @@ namespace InvoiceApi.Controllers
         // PUT: api/Invoice/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutInvoice(long id, Invoice invoice)
+        public async Task<IActionResult> PutInvoice(string id, Invoice invoice)
         {
             if (id != invoice.InvoiceId)
             {
@@ -85,7 +85,7 @@ namespace InvoiceApi.Controllers
 
         // DELETE: api/Invoice/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteInvoice(long id)
+        public async Task<IActionResult> DeleteInvoice(string id)
         {
             var invoice = await _context.Invoices.FindAsync(id);
             if (invoice == null)
@@ -99,7 +99,7 @@ namespace InvoiceApi.Controllers
             return NoContent();
         }
 
-        private bool InvoiceExists(long id)
+        private bool InvoiceExists(string id)
         {
             return _context.Invoices.Any(e => e.InvoiceId == id);
         }
