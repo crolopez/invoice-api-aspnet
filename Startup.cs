@@ -10,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using InvoiceApi.Models;
+using InvoiceApi.Formatters;
 
 namespace InvoiceApi
 {
@@ -28,12 +28,17 @@ namespace InvoiceApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddMvc(options =>
+            {
+                options.OutputFormatters.Insert(0, new InvoiceOutputFormatter());
+            });
             services.AddControllers();
+            /*
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "InvoiceApi", Version = "v1" });
             });
+            */
             services.AddDbContext<Context>(opt =>
                                                opt.UseInMemoryDatabase("Invoices"));
         }
@@ -44,8 +49,10 @@ namespace InvoiceApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                /*
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "InvoiceApi v1"));
+                */
             }
 
             app.UseHttpsRedirection();
