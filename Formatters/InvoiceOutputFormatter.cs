@@ -30,6 +30,7 @@ namespace InvoiceApi.Formatters {
             OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
             var httpContext = context.HttpContext;
+            var method = httpContext.Request.Method;
             object response = new {};
 
             switch (context.Object) {
@@ -37,25 +38,27 @@ namespace InvoiceApi.Formatters {
                     response = GetResponse((IEnumerable<Invoice>) context.Object);
                 break;
                 case Invoice:
-                    response = GetResponse((Invoice) context.Object);
+                    response = GetResponse(method, (Invoice) context.Object);
                 break;
             }
 
             await httpContext.Response.WriteAsJsonAsync(response);
         }
 
-        private Response<Invoice> GetResponse(Invoice invoice)
+        private Response<Invoice> GetResponse(string method, Invoice invoice)
         {
-            var invoiceList = new List<InvoiceDataNode> { new InvoiceDataNode(0, invoice) };
+            var dataNode = method == "DELETE" ?
+                new InvoiceDataNode(invoice.InvoiceId) :
+                new InvoiceDataNode(invoice);
+            var invoiceList = new List<InvoiceDataNode> { dataNode };
             return new Response<Invoice>(invoiceList);
         }
 
         private Response<Invoice> GetResponse(IEnumerable<Invoice> invoices)
         {
-            int invoiceNo = 0;
             var invoiceList = invoices.ToList()
                 .ConvertAll<InvoiceDataNode>(invoice =>
-                    new InvoiceDataNode(invoiceNo++, invoice));
+                    new InvoiceDataNode(invoice));
             return new Response<Invoice>(invoiceList);
         }
     }
