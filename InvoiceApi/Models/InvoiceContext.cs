@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceApi.Models
 {
-    public class Context : DbContext
+    public class InvoiceContext : DbContext
     {
-        public Context(DbContextOptions<Context> options)
+        public InvoiceContext(DbContextOptions<InvoiceContext> options)
             : base(options)
         {
         }

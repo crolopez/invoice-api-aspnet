@@ -13,9 +13,9 @@ namespace InvoiceApi.Controllers
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private readonly Context _context;
+        private readonly InvoiceContext _context;
 
-        public InvoiceController(Context context)
+        public InvoiceController(InvoiceContext context)
         {
             _context = context;
         }
