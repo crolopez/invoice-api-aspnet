@@ -33,7 +33,20 @@ Response:
 
 ``` JSON
 {
-    "success": true
+    "data": [
+        {
+            "id": "891248192B",
+            "type": "invoice",
+            "attributes": {
+                "invoiceId": "891248192B",
+                "supplier": "Fake supplier",
+                "dateIssued": "2021-01-27T17:16:40",
+                "currency": "EUR",
+                "amount": 1000,
+                "description": "New projector for confenrece room"
+            }
+        }
+    ]
 }
 ```
 
@@ -51,8 +64,21 @@ Response:
 
 ``` JSON
 {
-    "success": true,
-    "invoices": [<list of invoices>]
+    "data": [
+        {
+            "id": "891248192B",
+            "type": "invoice",
+            "attributes": {
+                "invoiceId": "891248192B",
+                "supplier": "Fake supplier",
+                "dateIssued": "2021-01-27T17:16:40",
+                "currency": "EUR",
+                "amount": 1000,
+                "description": "New projector for confenrece room"
+            }
+        },
+        ...
+    ]
 }
 ```
 
@@ -71,8 +97,20 @@ Response:
 
 ``` JSON
 {
-    "success": true,
-    "invoices": [<requested invoice>]
+    "data": [
+        {
+            "id": "891248192B",
+            "type": "invoice",
+            "attributes": {
+                "invoiceId": "891248192B",
+                "supplier": "Fake supplier",
+                "dateIssued": "2021-01-27T17:16:40",
+                "currency": "EUR",
+                "amount": 1000,
+                "description": "New projector for confenrece room"
+            }
+        }
+    ]
 }
 ```
 
@@ -90,7 +128,12 @@ Response:
 
 ``` JSON
 {
-    "success": true
+    "data": [
+        {
+            "id": "891248192B",
+            "type": "invoice"
+        }
+    ]
 }
 ```
 
@@ -102,13 +145,26 @@ Request:
 
 ``` bash
 curl -X PUT -i -H 'Content-Type: application/json' https://localhost:5001/api/invoice/891248192B \
--d '{ "invoiceId": "891248192B", "supplier": "Fake supplier", "dateIssued": "2021-01-27T17:16:40", "currency": "EUR", "amount": 1000.00, "description": "New projector for confenrece room" }'
+-d '{ "invoiceId": "891248192B", "supplier": "Fake supplier", "dateIssued": "2021-01-27T17:16:40", "currency": "EUR", "amount": 1500.00, "description": "New projector for confenrece room" }'
 ```
 
 Response:
 
 ``` JSON
 {
-    "success": true
+    "data": [
+        {
+            "id": "891248192B",
+            "type": "invoice",
+            "attributes": {
+                "invoiceId": "891248192B",
+                "supplier": "Fake supplier",
+                "dateIssued": "2021-01-27T17:16:40",
+                "currency": "EUR",
+                "amount": 1500,
+                "description": "New projector for confenrece room"
+            }
+        }
+    ]
 }
 ```
