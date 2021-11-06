@@ -13,9 +13,9 @@ namespace InvoiceApi.Controllers
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private readonly InvoiceContext _context;
+        private readonly IInvoiceContext _context;
 
-        public InvoiceController(InvoiceContext context)
+        public InvoiceController(IInvoiceContext context)
         {
             _context = context;
         }
@@ -24,14 +24,14 @@ namespace InvoiceApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {
-            return await _context.Invoices.ToListAsync();
+            return await _context.GetAllInvoices();
         }
 
         // GET: api/Invoice/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(string id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _context.FindInvoice(id);
 
             if (invoice == null)
             {
@@ -51,15 +51,13 @@ namespace InvoiceApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.UpdateInvoice(invoice);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!InvoiceExists(id))
+                if (await _context.FindInvoice(id) == null)
                 {
                     return NotFound();
                 }
@@ -77,8 +75,7 @@ namespace InvoiceApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-            _context.Invoices.Add(invoice);
-            await _context.SaveChangesAsync();
+            await _context.AddInvoice(invoice);
 
             return CreatedAtAction(nameof(GetInvoice), new { id = invoice.InvoiceId }, invoice);
         }
@@ -87,21 +84,15 @@ namespace InvoiceApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Invoice>> DeleteInvoice(string id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _context.FindInvoice(id);
             if (invoice == null)
             {
                 return NotFound();
             }
 
-            _context.Invoices.Remove(invoice);
-            await _context.SaveChangesAsync();
+            await _context.DeleteInvoice(invoice);
 
             return invoice;
-        }
-
-        private bool InvoiceExists(string id)
-        {
-            return _context.Invoices.Any(e => e.InvoiceId == id);
         }
     }
 }

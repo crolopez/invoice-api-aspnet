@@ -39,6 +39,7 @@ namespace InvoiceApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "InvoiceApi", Version = "v1" });
             });
             */
+            services.AddScoped<IInvoiceContext, InvoiceContext>();
             services.AddDbContext<InvoiceContext>(opt =>
                                                opt.UseInMemoryDatabase("Invoices"));
         }
