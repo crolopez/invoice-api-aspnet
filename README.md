@@ -145,7 +145,7 @@ Request:
 
 ``` bash
 curl -X PUT -i -H 'Content-Type: application/json' https://localhost:5001/api/invoice/891248192B \
--d '{ "invoiceId": "891248192B", "supplier": "Fake supplier", "dateIssued": "2021-01-27T17:16:40", "currency": "EUR", "amount": 1500.00, "description": "New projector for confenrece room" }'
+-d '{ "invoiceId": "891248192B", "supplier": "Fake supplier", "dateIssued": "2021-01-27T17:16:40", "currency": "EUR", "amount": 1500.00, "description": "New table for confenrece room" }'
 ```
 
 Response:
@@ -162,7 +162,7 @@ Response:
                 "dateIssued": "2021-01-27T17:16:40",
                 "currency": "EUR",
                 "amount": 1500,
-                "description": "New projector for confenrece room"
+                "description": "New table for confenrece room"
             }
         }
     ]
