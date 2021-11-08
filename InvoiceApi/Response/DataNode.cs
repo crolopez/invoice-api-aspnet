@@ -1,4 +1,4 @@
-namespace InvoiceApi.Formatters
+namespace InvoiceApi.Response
 {
   public class DataNode<T>
   {

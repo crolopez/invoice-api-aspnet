@@ -1,6 +1,6 @@
 using InvoiceApi.Models;
 
-namespace InvoiceApi.Formatters
+namespace InvoiceApi.Response
 {
     public class InvoiceDataNode: DataNode<Invoice>
     {

@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 
-namespace InvoiceApi.Formatters
+namespace InvoiceApi.Response
 {
   public class Response<T>
   {
