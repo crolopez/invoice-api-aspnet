@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using InvoiceApi.Models;
 using InvoiceApi.Formatters;
+using System.Net.Mime;
 
 namespace InvoiceApi
 {
@@ -32,7 +33,15 @@ namespace InvoiceApi
             {
                 options.OutputFormatters.Insert(0, new InvoiceOutputFormatter());
             });
-            services.AddControllers();
+            services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory =
+                        InvalidRequestOutputFormatter.GetResponse;
+                })
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                });
             /*
             services.AddSwaggerGen(c =>
             {
