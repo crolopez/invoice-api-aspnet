@@ -1,8 +1,10 @@
+using InvoiceApi.Domain.Contracts;
+using InvoiceApi.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace InvoiceApi.Models
+namespace InvoiceApi.Domain
 {
     public class InvoiceContext : DbContext, IInvoiceContext
     {

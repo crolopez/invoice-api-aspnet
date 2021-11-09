@@ -1,6 +1,6 @@
 using System;
 
-namespace InvoiceApi.Models
+namespace InvoiceApi.Domain.Models
 {
     public class Invoice
     {

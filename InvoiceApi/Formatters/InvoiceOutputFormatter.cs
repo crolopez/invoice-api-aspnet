@@ -1,4 +1,4 @@
-using InvoiceApi.Models;
+using InvoiceApi.Domain.Models;
 using InvoiceApi.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;

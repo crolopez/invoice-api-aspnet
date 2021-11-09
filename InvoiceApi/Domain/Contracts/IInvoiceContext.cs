@@ -1,7 +1,8 @@
+using InvoiceApi.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace InvoiceApi.Models
+namespace InvoiceApi.Domain.Contracts
 {
     public interface IInvoiceContext
     {
