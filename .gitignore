@@ -387,4 +387,4 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
-./InvoiceApi/appsettings.Development.json
+InvoiceApi/appsettings.Development.json
