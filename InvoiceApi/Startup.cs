@@ -16,8 +16,10 @@ using InvoiceApi.Formatters;
 using System.Net.Mime;
 using InvoiceApi.Domain.Contracts;
 using InvoiceApi.Domain;
+using InvoiceApi.Config;
 using InvoiceApi.Providers.Contracts;
 using InvoiceApi.Providers;
+using Microsoft.Extensions.Options;
 
 namespace InvoiceApi
 {
@@ -52,10 +54,13 @@ namespace InvoiceApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "InvoiceApi", Version = "v1" });
             });
             */
+
+            services.Configure<APIConfig>(Configuration.GetSection("Config"));
+
             services.AddScoped<IInvoiceContext, InvoiceContext>();
             services.AddScoped<IExchangeService, ExchangeService>();
-            services.AddSingleton<IConversionProvider>(x =>
-                new ConversionProvider("XXXXXXXX")); // CONFIG
+            services.AddSingleton<IConversionProvider, ConversionProvider>();
+
             services.AddDbContext<InvoiceContext>(opt =>
                                                opt.UseInMemoryDatabase("Invoices"));
         }

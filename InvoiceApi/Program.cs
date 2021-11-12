@@ -18,6 +18,18 @@ namespace InvoiceApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    var env = builderContext.HostingEnvironment;
+
+                    config
+                        .SetBasePath(env.ContentRootPath)
+                        .AddJsonFile("InvoiceApi/appsettings.json",
+                            optional: false, reloadOnChange: true)
+                        .AddJsonFile($"InvoiceApi/appsettings.{env.EnvironmentName}.json",
+                            optional: true)
+                        .AddEnvironmentVariables();
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

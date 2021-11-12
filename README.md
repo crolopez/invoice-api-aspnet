@@ -6,6 +6,16 @@ Simple API REST to manage invoices with the purpose of gaining knowledge about A
 
 - [**.NET 5.0 SDK**](https://dotnet.microsoft.com/download/dotnet/5.0)
 
+## Configuration
+
+If you want to use the https://free.currconv.com service to retrieve invoices in a currency other than the one in which they were saved, you will have to modify the `appsetting` file to include the API Key to access this service.
+
+``` json
+  "Config": {
+    "CURRCONV_APIKEY": "XXXX"
+  }
+```
+
 ## How to deploy
 
 Just execute:

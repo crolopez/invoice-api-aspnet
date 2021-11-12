@@ -5,6 +5,8 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
+using InvoiceApi.Config;
 
 namespace InvoiceApi.Providers
 {
@@ -15,9 +17,9 @@ namespace InvoiceApi.Providers
             "convert?apiKey={0}&q={1}_{2}&compact=y";
         readonly string _apiKey;
 
-        public ConversionProvider(string apiKey)
+        public ConversionProvider(IOptions<APIConfig> config)
         {
-            _apiKey = apiKey;
+            _apiKey = config.Value.CURRCONV_APIKEY;
         }
 
         public double Get(string fromCurrency, string toCurrency)
