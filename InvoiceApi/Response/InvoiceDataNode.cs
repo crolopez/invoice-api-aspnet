@@ -1,4 +1,4 @@
-using InvoiceApi.Models;
+using InvoiceApi.Domain.Models;
 
 namespace InvoiceApi.Response
 {

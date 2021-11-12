@@ -10,6 +10,7 @@ namespace InvoiceApi.Domain.Contracts
         Task UpdateInvoice(Invoice invoice);
         Task DeleteInvoice(Invoice invoice);
         ValueTask<Invoice> FindInvoice(string invoiceId);
+        ValueTask<Invoice> FindInvoice(string invoiceId, string currency);
         Task<List<Invoice>> GetAllInvoices();
     }
 }

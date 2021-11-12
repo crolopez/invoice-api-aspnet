@@ -8,9 +8,13 @@ namespace InvoiceApi.Domain
 {
     public class InvoiceContext : DbContext, IInvoiceContext
     {
-        public InvoiceContext(DbContextOptions<InvoiceContext> options)
+        IExchangeService _exchangeService;
+
+        public InvoiceContext(DbContextOptions<InvoiceContext> options,
+            IExchangeService exchangeService)
             : base(options)
         {
+            _exchangeService = exchangeService;
         }
 
         public DbSet<Invoice> Invoices { get; set; }
@@ -29,6 +33,16 @@ namespace InvoiceApi.Domain
         public Task DeleteInvoice(Invoice invoice) {
             Invoices.Remove(invoice);
             return SaveChangesAsync();
+        }
+
+        public ValueTask<Invoice> FindInvoice(string invoiceId, string currency)
+        {
+            var invoice = FindInvoice(invoiceId);
+            if (invoice.Result != null) {
+                _exchangeService.Convert(invoice.Result, currency);
+            }
+
+            return invoice;
         }
 
         public ValueTask<Invoice> FindInvoice(string invoiceId)

@@ -1,5 +1,5 @@
 using InvoiceApi.Response;
-using InvoiceApi.Models;
+using InvoiceApi.Domain.Models;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

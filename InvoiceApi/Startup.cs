@@ -11,9 +11,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using InvoiceApi.Models;
+using InvoiceApi.Domain.Models;
 using InvoiceApi.Formatters;
 using System.Net.Mime;
+using InvoiceApi.Domain.Contracts;
+using InvoiceApi.Domain;
+using InvoiceApi.Providers.Contracts;
+using InvoiceApi.Providers;
 
 namespace InvoiceApi
 {
@@ -49,6 +53,9 @@ namespace InvoiceApi
             });
             */
             services.AddScoped<IInvoiceContext, InvoiceContext>();
+            services.AddScoped<IExchangeService, ExchangeService>();
+            services.AddSingleton<IConversionProvider>(x =>
+                new ConversionProvider("XXXXXXXX")); // CONFIG
             services.AddDbContext<InvoiceContext>(opt =>
                                                opt.UseInMemoryDatabase("Invoices"));
         }

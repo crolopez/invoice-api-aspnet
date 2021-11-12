@@ -1,7 +1,8 @@
 using System;
 using NUnit.Framework;
 using InvoiceApi.Controllers;
-using InvoiceApi.Models;
+using InvoiceApi.Domain.Models;
+using InvoiceApi.Domain.Contracts;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace UnitTests.Controllers
         [Test]
         public async Task GetInvoiceMethodReturnsTheDesiredInvoice()
         {
-            var result = await _controller.GetInvoice(FakeInvoice1.InvoiceId);
+            var result = await _controller.GetInvoice(FakeInvoice1.InvoiceId, null);
 
             Assert.AreEqual(FakeInvoice1, result.Value);
         }
