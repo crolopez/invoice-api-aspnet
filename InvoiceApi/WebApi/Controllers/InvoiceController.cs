@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using InvoiceApi.Domain.Contracts;
-using InvoiceApi.Domain.Models;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Core.Domain.Models;
 
-namespace InvoiceApi.Controllers
+namespace InvoiceApi.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

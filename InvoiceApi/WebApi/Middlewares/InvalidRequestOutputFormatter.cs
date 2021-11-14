@@ -1,11 +1,13 @@
-using InvoiceApi.Response;
-using InvoiceApi.Domain.Models;
+
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using InvoiceApi.Core.Domain.Models.Response;
+using InvoiceApi.Core.Domain.Models;
 
-namespace InvoiceApi.Formatters {
+namespace InvoiceApi.WebApi.Middlewares
+{
     public static class InvalidRequestOutputFormatter
     {
       public static IActionResult GetResponse(ActionContext context)

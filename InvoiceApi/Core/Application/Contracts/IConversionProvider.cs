@@ -1,4 +1,4 @@
-﻿namespace InvoiceApi.Providers.Contracts
+﻿namespace InvoiceApi.Core.Application.Contracts
 {
     public interface IConversionProvider
     {

@@ -11,15 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using InvoiceApi.Domain.Models;
-using InvoiceApi.Formatters;
 using System.Net.Mime;
-using InvoiceApi.Domain.Contracts;
-using InvoiceApi.Domain;
-using InvoiceApi.Config;
-using InvoiceApi.Providers.Contracts;
-using InvoiceApi.Providers;
 using Microsoft.Extensions.Options;
+using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Infrastructure;
+using InvoiceApi.Core.Application;
+using InvoiceApi.Infrastructure.Shared;
+using InvoiceApi.WebApi.Middlewares;
 
 namespace InvoiceApi
 {

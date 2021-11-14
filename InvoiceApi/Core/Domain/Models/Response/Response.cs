@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace InvoiceApi.Response
+namespace InvoiceApi.Core.Domain.Models.Response
 {
   public class Response<T>
   {

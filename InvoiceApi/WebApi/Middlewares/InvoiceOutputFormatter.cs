@@ -1,5 +1,5 @@
-using InvoiceApi.Domain.Models;
-using InvoiceApi.Response;
+using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.Core.Domain.Models.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +13,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace InvoiceApi.Formatters {
+namespace InvoiceApi.WebApi.Middlewares
+{
     public class InvoiceOutputFormatter : TextOutputFormatter
     {
         private readonly JsonSerializerOptions _jsonSettings;

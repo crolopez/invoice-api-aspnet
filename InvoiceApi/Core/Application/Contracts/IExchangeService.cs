@@ -1,6 +1,6 @@
-﻿using InvoiceApi.Domain.Models;
+﻿using InvoiceApi.Core.Domain.Models;
 
-namespace InvoiceApi.Domain.Contracts
+namespace InvoiceApi.Core.Application.Contracts
 {
     public interface IExchangeService
     {

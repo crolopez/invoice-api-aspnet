@@ -1,10 +1,8 @@
-﻿using InvoiceApi.Domain.Contracts;
-using InvoiceApi.Domain.Models;
-using InvoiceApi.Providers.Contracts;
-using InvoiceApi.Providers;
+﻿using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Core.Domain.Models;
 using System;
 
-namespace InvoiceApi.Domain
+namespace InvoiceApi.Core.Application
 {
     public class ExchangeService: IExchangeService
     {

@@ -1,4 +1,4 @@
-namespace InvoiceApi.Response
+namespace InvoiceApi.Core.Domain.Models.Response
 {
   public class DataNode<T>
   {

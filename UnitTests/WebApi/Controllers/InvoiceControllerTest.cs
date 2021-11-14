@@ -1,17 +1,15 @@
 using System;
 using NUnit.Framework;
-using InvoiceApi.Controllers;
-using InvoiceApi.Domain.Models;
-using InvoiceApi.Domain.Contracts;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.WebApi.Controllers;
 
-namespace UnitTests.Controllers
+namespace UnitTests.WebApi.Controllers
 {
-    //private InvoiceController controller;
-
     public class InvoiceControllerTest
     {
         #region Common variables

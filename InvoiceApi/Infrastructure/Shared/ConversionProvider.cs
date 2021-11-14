@@ -1,14 +1,14 @@
-﻿using InvoiceApi.Providers.Contracts;
-using System.Text;
+﻿using System.Text;
 using System;
 using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
-using InvoiceApi.Config;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Core.Domain.Models;
 
-namespace InvoiceApi.Providers
+namespace InvoiceApi.Infrastructure.Shared
 {
     public class ConversionProvider: IConversionProvider
     {
