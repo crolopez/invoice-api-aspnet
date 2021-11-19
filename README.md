@@ -12,7 +12,7 @@ If you want to use the https://free.currconv.com service to retrieve invoices in
 
 ``` json
   "Config": {
-    "CURRCONV_APIKEY": "XXXX"
+    "CurrencyConverterKey": "XXXX"
   }
 ```
 

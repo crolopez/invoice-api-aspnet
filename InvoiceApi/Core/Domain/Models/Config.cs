@@ -2,7 +2,7 @@ namespace InvoiceApi.Core.Domain.Models
 {
   public class APIConfig
   {
-      public string CURRCONV_APIKEY { get; set; }
+      public string CurrencyConverterKey { get; set; }
   }
 }
 

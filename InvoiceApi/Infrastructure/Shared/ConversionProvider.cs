@@ -19,7 +19,7 @@ namespace InvoiceApi.Infrastructure.Shared
 
         public ConversionProvider(IOptions<APIConfig> config)
         {
-            _apiKey = config.Value.CURRCONV_APIKEY;
+            _apiKey = config.Value.CurrencyConverterKey;
         }
 
         public double Get(string fromCurrency, string toCurrency)
