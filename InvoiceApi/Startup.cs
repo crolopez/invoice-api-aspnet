@@ -57,9 +57,6 @@ namespace InvoiceApi
             services.Configure<APIConfig>(Configuration.GetSection("Config"));
 
             IoC.AddDependency(services);
-
-            services.AddDbContext<InvoiceContext>(opt =>
-                                    opt.UseInMemoryDatabase("Invoices"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

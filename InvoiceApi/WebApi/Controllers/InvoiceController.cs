@@ -14,18 +14,25 @@ namespace InvoiceApi.WebApi.Controllers
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private readonly IInvoiceContext _context;
+        private readonly IGenericRepository<Invoice> _genericRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IExchangeService _exchangeService;
 
-        public InvoiceController(IInvoiceContext context)
+        public InvoiceController(IGenericRepository<Invoice> genericRepository,
+            IUnitOfWork unitOfWork, IExchangeService exchangeService)
         {
-            _context = context;
+            _genericRepository = genericRepository;
+            _unitOfWork = unitOfWork;
+            _exchangeService = exchangeService;
         }
 
         // GET: api/Invoice
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {
-            return await _context.GetAllInvoices();
+            var invoices = await _genericRepository.GetAsync();
+
+            return invoices.ToList();
         }
 
         // GET: api/Invoice/5
@@ -33,13 +40,17 @@ namespace InvoiceApi.WebApi.Controllers
         #nullable enable
         public async Task<ActionResult<Invoice>> GetInvoice(string id, [FromQuery] string? currency)
         {
-            var invoice = currency != null
-                ? await _context.FindInvoice(id, currency)
-                : await _context.FindInvoice(id);
+            Invoice? invoice = (await _genericRepository
+                .GetAsync(x => x.InvoiceId == id))?.First();
 
             if (invoice == null)
             {
                 return NotFound();
+            }
+
+            if (currency != null)
+            {
+                _exchangeService.Convert(invoice, currency);
             }
 
             return invoice;
@@ -49,30 +60,19 @@ namespace InvoiceApi.WebApi.Controllers
         // PUT: api/Invoice/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<ActionResult<Invoice>> PutInvoice(string id, Invoice invoice)
+        public ActionResult<Invoice> PutInvoice(string id, Invoice invoice)
         {
             if (id != invoice.InvoiceId)
             {
                 return BadRequest();
             }
 
-            try
-            {
-                await _context.UpdateInvoice(invoice);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (await _context.FindInvoice(id) == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+            Invoice updatedInvoice = _genericRepository.Update(invoice);
+            if (updatedInvoice != null) {
+                _unitOfWork.Commit();
             }
 
-            return invoice;
+            return updatedInvoice;
         }
 
         // POST: api/Invoice
@@ -80,22 +80,28 @@ namespace InvoiceApi.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-            await _context.AddInvoice(invoice);
+            Invoice savedInvoice = await _genericRepository.CreateAsync(invoice);
 
-            return CreatedAtAction(nameof(GetInvoice), new { id = invoice.InvoiceId }, invoice);
+            if(savedInvoice != null)
+                _unitOfWork.Commit();
+
+            return savedInvoice;
         }
 
         // DELETE: api/Invoice/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Invoice>> DeleteInvoice(string id)
         {
-            var invoice = await _context.FindInvoice(id);
+            Invoice invoice = (await GetInvoice(id, null)).Value;
             if (invoice == null)
             {
                 return NotFound();
             }
 
-            await _context.DeleteInvoice(invoice);
+            invoice = _genericRepository.Remove(invoice);
+
+            if(invoice != null)
+                _unitOfWork.Commit();
 
             return invoice;
         }

@@ -22,10 +22,11 @@ namespace InvoiceApi
                 {
                     var env = builderContext.HostingEnvironment;
 
-
                     config
                         .SetBasePath(env.ContentRootPath)
-                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json",
+                        .AddJsonFile($"InvoiceApi/appsettings.json",
+                            optional: true, reloadOnChange: true)
+                        .AddJsonFile($"InvoiceApi/appsettings.{env.EnvironmentName}.json",
                             optional: true, reloadOnChange: true)
                         .AddEnvironmentVariables();
                 })
