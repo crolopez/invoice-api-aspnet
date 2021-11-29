@@ -28,9 +28,17 @@ namespace InvoiceApi.WebApi.Controllers
 
         // GET: api/Invoice
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
+        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices([FromQuery] string? currency)
         {
             var invoices = await _genericRepository.GetAsync();
+
+            if (currency != null)
+            {
+                foreach (var i in invoices)
+                {
+                    _exchangeService.Convert(i, currency);
+                }
+            }
 
             return invoices.ToList();
         }

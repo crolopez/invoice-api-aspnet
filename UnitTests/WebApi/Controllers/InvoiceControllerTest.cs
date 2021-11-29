@@ -58,9 +58,18 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task GetInvoicesMethodReturnsAllInvoices()
     {
-      var result = await _controller.GetInvoices();
+      var result = await _controller.GetInvoices(null);
 
       Assert.AreEqual(InvoiceList, result.Value);
+    }
+
+    [Test]
+    public async Task GetInvoicesMethodReturnsAllInvoicesInTheDesiredCurrency()
+    {
+      var result = await _controller.GetInvoices("FakeCurrency");
+
+      _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice1, "FakeCurrency"), Times.Once());
+      _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice2, "FakeCurrency"), Times.Once());
     }
 
     [Test]
