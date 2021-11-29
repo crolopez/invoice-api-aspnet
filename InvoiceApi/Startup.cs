@@ -54,6 +54,8 @@ namespace InvoiceApi
             });
             */
 
+            services.AddCors();
+
             services.Configure<APIConfig>(Configuration.GetSection("Config"));
 
             IoC.AddDependency(services);
@@ -70,6 +72,22 @@ namespace InvoiceApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "InvoiceApi v1"));
                 */
             }
+
+            app.Use((context, next) =>
+            {
+                context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+                context.Response.Headers["Access-Control-Allow-Headers"] = "Origin, X-Requested-With, Content-Type, Accept";
+                context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, PATCH, DELETE";
+                return next.Invoke();
+            });
+
+            app.UseCors(builder =>
+            {
+                builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            });
 
             app.UseHttpsRedirection();
 
