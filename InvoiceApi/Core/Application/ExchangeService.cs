@@ -15,9 +15,9 @@ namespace InvoiceApi.Core.Application
 
         public void Convert(Invoice invoice, string currency)
         {
-            invoice.Amount = invoice.Amount *
-                _conversionProvider.Get(invoice.Currency, currency);
-            invoice.Currency = currency;
+            invoice.amount = invoice.amount *
+                _conversionProvider.Get(invoice.currency, currency);
+            invoice.currency = currency;
         }
     }
 }

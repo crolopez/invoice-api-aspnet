@@ -5,7 +5,7 @@ namespace InvoiceApi.Core.Domain.Models.Response
     private const string DataType = "invoice";
 
     public InvoiceDataNode(Invoice invoice):
-      base(invoice.InvoiceId, DataType, invoice)
+      base(invoice.invoiceId, DataType, invoice)
     {
     }
 

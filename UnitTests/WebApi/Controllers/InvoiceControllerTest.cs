@@ -18,14 +18,14 @@ namespace UnitTests.WebApi.Controllers
     private static readonly Lazy<Invoice> _fakeInvoice1 = new Lazy<Invoice>(() =>
       new Invoice()
       {
-        InvoiceId = "FakeInvoiceId1"
+        invoiceId = "FakeInvoiceId1"
       });
     private static Invoice FakeInvoice1 => _fakeInvoice1.Value;
 
     private static readonly Lazy<Invoice> _fakeInvoice2 = new Lazy<Invoice>(() =>
       new Invoice()
       {
-        InvoiceId = "FakeInvoiceId2"
+        invoiceId = "FakeInvoiceId2"
       });
     private static Invoice FakeInvoice2 => _fakeInvoice2.Value;
 
@@ -66,7 +66,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task GetInvoiceMethodReturnsTheDesiredInvoice()
     {
-      var result = await _controller.GetInvoice(FakeInvoice1.InvoiceId, null);
+      var result = await _controller.GetInvoice(FakeInvoice1.invoiceId, null);
 
       _exchangeServiceMock.Verify(x => x
         .Convert(It.IsAny<Invoice>(), It.IsAny<string>()), Times.Never());
@@ -76,7 +76,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task GetInvoiceMethodConvertsTheCurrency()
     {
-      var result = await _controller.GetInvoice(FakeInvoice1.InvoiceId, "USD");
+      var result = await _controller.GetInvoice(FakeInvoice1.invoiceId, "USD");
 
       _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice1, "USD"), Times.Once());
       Assert.AreEqual(FakeInvoice1, result.Value);
@@ -85,7 +85,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public void PutInvoiceMethodUpdatesTheInvoice()
     {
-      var result = _controller.PutInvoice(FakeInvoice1.InvoiceId, FakeInvoice1);
+      var result = _controller.PutInvoice(FakeInvoice1.invoiceId, FakeInvoice1);
 
       _genericRepositoryMock.Verify(x => x.Update(FakeInvoice1), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());
@@ -105,7 +105,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task DeleteInvoiceMethodRemovesTheInvoice()
     {
-      var result = await _controller.DeleteInvoice(FakeInvoice1.InvoiceId);
+      var result = await _controller.DeleteInvoice(FakeInvoice1.invoiceId);
 
       _genericRepositoryMock.Verify(x => x.Remove(FakeInvoice1), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());

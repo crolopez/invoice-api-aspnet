@@ -21,7 +21,7 @@ If you want to use the https://free.currconv.com service to retrieve invoices in
 Just execute:
 
 ``` bash
-dotnet run # Includes the building step
+dotnet run --project InvoiceApi # Includes the building step
 ```
 
 You can check an Azure Pipeline example about how to generate the artifact [here](./.azure/ci.yml).

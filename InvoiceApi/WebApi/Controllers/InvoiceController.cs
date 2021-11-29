@@ -41,7 +41,7 @@ namespace InvoiceApi.WebApi.Controllers
         public async Task<ActionResult<Invoice>> GetInvoice(string id, [FromQuery] string? currency)
         {
             Invoice? invoice = (await _genericRepository
-                .GetAsync(x => x.InvoiceId == id))?.First();
+                .GetAsync(x => x.invoiceId == id))?.First();
 
             if (invoice == null)
             {
@@ -62,7 +62,7 @@ namespace InvoiceApi.WebApi.Controllers
         [HttpPut("{id}")]
         public ActionResult<Invoice> PutInvoice(string id, Invoice invoice)
         {
-            if (id != invoice.InvoiceId)
+            if (id != invoice.invoiceId)
             {
                 return BadRequest();
             }

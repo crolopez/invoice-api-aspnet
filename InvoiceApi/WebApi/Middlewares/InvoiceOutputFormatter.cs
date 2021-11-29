@@ -60,7 +60,7 @@ namespace InvoiceApi.WebApi.Middlewares
         private Response<Invoice> GetResponse(string method, Invoice invoice)
         {
             var dataNode = method == "DELETE" ?
-                new InvoiceDataNode(invoice.InvoiceId) :
+                new InvoiceDataNode(invoice.invoiceId) :
                 new InvoiceDataNode(invoice);
             var invoiceList = new List<InvoiceDataNode> { dataNode };
             return new Response<Invoice>(invoiceList);
