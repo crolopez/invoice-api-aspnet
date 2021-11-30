@@ -58,7 +58,7 @@ namespace InvoiceApi
 
             services.Configure<APIConfig>(Configuration.GetSection("Config"));
 
-            IoC.AddDependency(services);
+            IoC.AddDependencies(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

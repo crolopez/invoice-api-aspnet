@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.WebApi.Middlewares;
 
 namespace InvoiceApi.WebApi.Controllers
 {
@@ -28,90 +29,143 @@ namespace InvoiceApi.WebApi.Controllers
 
         // GET: api/Invoice
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices([FromQuery] string? currency)
+        #nullable enable
+        public async Task<ActionResult<InvoiceAction>> GetInvoices([FromQuery] string? currency)
         {
-            var invoices = await _genericRepository.GetAsync();
-
-            if (currency != null)
+            try
             {
-                foreach (var i in invoices)
-                {
-                    _exchangeService.Convert(i, currency);
-                }
-            }
+                var invoices = await _genericRepository.GetAsync();
 
-            return invoices.ToList();
+                if (currency != null)
+                {
+                    foreach (var i in invoices)
+                    {
+                        _exchangeService.Convert(i, currency);
+                    }
+                }
+
+                return new InvoiceAction(invoices);
+            }
+            catch (Exception exception)
+            {
+                return GetErrorAction(string.Empty, exception.Message);
+            }
         }
+        #nullable disable
 
         // GET: api/Invoice/5
         [HttpGet("{id}")]
         #nullable enable
-        public async Task<ActionResult<Invoice>> GetInvoice(string id, [FromQuery] string? currency)
+        public async Task<ActionResult<InvoiceAction>> GetInvoice(string id, [FromQuery] string? currency)
         {
-            Invoice? invoice = (await _genericRepository
-                .GetAsync(x => x.invoiceId == id))?.First();
-
-            if (invoice == null)
+            try
             {
-                return NotFound();
-            }
+                Invoice? invoice = (await _genericRepository
+                    .GetAsync(x => x.invoiceId == id))?.First();
 
-            if (currency != null)
+                if (invoice == null)
+                {
+                    return GetNotFoundAction(id);
+                }
+
+                if (currency != null)
+                {
+                    _exchangeService.Convert(invoice, currency);
+                }
+
+                return new InvoiceAction(invoice);
+            }
+            catch (Exception exception)
             {
-                _exchangeService.Convert(invoice, currency);
+                return GetErrorAction(id, exception.Message);
             }
-
-            return invoice;
         }
         #nullable disable
 
         // PUT: api/Invoice/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public ActionResult<Invoice> PutInvoice(string id, Invoice invoice)
+        public async Task<ActionResult<InvoiceAction>> PutInvoice(string id, Invoice invoice)
         {
-            if (id != invoice.invoiceId)
+            try
             {
-                return BadRequest();
-            }
+                if (id != invoice.invoiceId)
+                {
+                    return GetErrorAction(id, "Request ID doesn't match invoice ID.");
+                }
 
-            Invoice updatedInvoice = _genericRepository.Update(invoice);
-            if (updatedInvoice != null) {
-                _unitOfWork.Commit();
-            }
+                Invoice updatedInvoice = _genericRepository.Update(invoice);
+                if (updatedInvoice == null ||
+                    (await _unitOfWork.Commit()) < 1)
+                {
+                    return GetErrorAction(id, "The invoice couldn't be updated.");
+                }
 
-            return updatedInvoice;
+                return new InvoiceAction(updatedInvoice);
+            }
+            catch (Exception exception)
+            {
+                return GetErrorAction(id, exception.Message);
+            }
         }
 
         // POST: api/Invoice
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
+        public async Task<ActionResult<InvoiceAction>> PostInvoice(Invoice invoice)
         {
-            Invoice savedInvoice = await _genericRepository.CreateAsync(invoice);
+            try
+            {
+                Invoice savedInvoice = await _genericRepository.CreateAsync(invoice);
 
-            if(savedInvoice != null)
-                _unitOfWork.Commit();
+                if(savedInvoice != null)
+                    await _unitOfWork.Commit();
 
-            return savedInvoice;
+                return new InvoiceAction(savedInvoice);
+            }
+            catch (Exception exception)
+            {
+                return GetErrorAction(invoice.invoiceId, exception.Message);
+            }
         }
 
         // DELETE: api/Invoice/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Invoice>> DeleteInvoice(string id)
+        public async Task<ActionResult<InvoiceAction>> DeleteInvoice(string id)
         {
-            Invoice invoice = (await GetInvoice(id, null)).Value;
-            if (invoice == null)
+            try
             {
-                return NotFound();
+                Invoice invoice = (await GetInvoice(id, null)).Value.InvoiceList.First();
+                if (invoice == null)
+                {
+                    return GetNotFoundAction(id);
+                }
+
+                invoice = _genericRepository.Remove(invoice);
+
+                if(invoice != null)
+                    await _unitOfWork.Commit();
+
+                return new InvoiceAction(invoice);
             }
+            catch (Exception exception)
+            {
+                return GetErrorAction(id, exception.Message);
+            }
+        }
 
-            invoice = _genericRepository.Remove(invoice);
+        private InvoiceAction GetNotFoundAction(string id)
+        {
+            return GetErrorAction(id, "Invoice not found.");
+        }
 
-            if(invoice != null)
-                _unitOfWork.Commit();
+        private InvoiceAction GetErrorAction(string id, string error)
+        {
+            var errorInvoice = new Invoice() {
+                invoiceId = id
+            };
 
-            return invoice;
+            return new InvoiceAction(errorInvoice, error);
         }
     }
 }

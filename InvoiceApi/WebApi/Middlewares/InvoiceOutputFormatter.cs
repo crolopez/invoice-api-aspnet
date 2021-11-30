@@ -1,5 +1,7 @@
+using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
 using InvoiceApi.Core.Domain.Models.Response;
+using InvoiceApi.WebApi.Factories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,7 @@ namespace InvoiceApi.WebApi.Middlewares
     public class InvoiceOutputFormatter : TextOutputFormatter
     {
         private readonly JsonSerializerOptions _jsonSettings;
+        private readonly IResponseFactory<Invoice> _responseFactory;
 
         public InvoiceOutputFormatter()
         {
@@ -27,51 +30,29 @@ namespace InvoiceApi.WebApi.Middlewares
 
             _jsonSettings = new JsonSerializerOptions();
             _jsonSettings.IgnoreNullValues = true;
+
+            _responseFactory = DependencyResolver.GetService<IResponseFactory<Invoice>>();
         }
 
         protected override bool CanWriteType(Type type)
         {
-            return typeof(IEnumerable<Invoice>).IsAssignableFrom(type) ||
-                typeof(Invoice).IsAssignableFrom(type);
+            return typeof(InvoiceAction).IsAssignableFrom(type);
         }
 
         public override async Task WriteResponseBodyAsync(
             OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            var httpContext = context.HttpContext;
-            var method = httpContext.Request.Method;
-            Response<Invoice> response;
+            HttpContext httpContext = context.HttpContext;
+            string method = httpContext.Request.Method;
+            var invoiceAction = (InvoiceAction) context.Object;
+            IEnumerable<Invoice> invoiceList = invoiceAction.InvoiceList;
 
-            switch (context.Object) {
-                case IEnumerable<Invoice>:
-                    response = GetResponse((IEnumerable<Invoice>) context.Object);
-                break;
-                case Invoice:
-                    response = GetResponse(method, (Invoice) context.Object);
-                break;
-                default: // TODO
-                    return;
-            }
+            Response<Invoice> response = invoiceAction.Error == string.Empty
+                ? _responseFactory.CreateResponse(method, invoiceList)
+                : _responseFactory.CreateErrorResponse(invoiceAction.Error, invoiceList);
 
             var responseStream = httpContext.Response.Body;
             await SerializeResponse(responseStream, response);
-        }
-
-        private Response<Invoice> GetResponse(string method, Invoice invoice)
-        {
-            var dataNode = method == "DELETE" ?
-                new InvoiceDataNode(invoice.invoiceId) :
-                new InvoiceDataNode(invoice);
-            var invoiceList = new List<InvoiceDataNode> { dataNode };
-            return new Response<Invoice>(invoiceList);
-        }
-
-        private Response<Invoice> GetResponse(IEnumerable<Invoice> invoices)
-        {
-            var invoiceList = invoices.ToList()
-                .ConvertAll<InvoiceDataNode>(invoice =>
-                    new InvoiceDataNode(invoice));
-            return new Response<Invoice>(invoiceList);
         }
 
         private Task SerializeResponse(Stream responseStream, Response<Invoice> response) {

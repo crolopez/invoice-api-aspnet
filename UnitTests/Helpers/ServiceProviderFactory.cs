@@ -14,7 +14,7 @@ namespace UnitTests.Helpers
     static ServiceProviderFactory()
     {
       ServiceCollection services = new ServiceCollection();
-      IoC.AddDependency(services);
+      IoC.AddDependencies(services);
       ServiceProvider = services.BuildServiceProvider();
     }
   }

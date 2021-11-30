@@ -8,6 +8,7 @@ using InvoiceApi.Core.Domain.Models;
 using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.WebApi.Controllers;
 using System.Linq.Expressions;
+using System.Linq;
 
 namespace UnitTests.WebApi.Controllers
 {
@@ -60,7 +61,7 @@ namespace UnitTests.WebApi.Controllers
     {
       var result = await _controller.GetInvoices(null);
 
-      Assert.AreEqual(InvoiceList, result.Value);
+      Assert.AreEqual(InvoiceList, result.Value.InvoiceList);
     }
 
     [Test]
@@ -79,7 +80,7 @@ namespace UnitTests.WebApi.Controllers
 
       _exchangeServiceMock.Verify(x => x
         .Convert(It.IsAny<Invoice>(), It.IsAny<string>()), Times.Never());
-      Assert.AreEqual(FakeInvoice1, result.Value);
+      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
     }
 
     [Test]
@@ -88,7 +89,7 @@ namespace UnitTests.WebApi.Controllers
       var result = await _controller.GetInvoice(FakeInvoice1.invoiceId, "USD");
 
       _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice1, "USD"), Times.Once());
-      Assert.AreEqual(FakeInvoice1, result.Value);
+      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
     }
 
     [Test]
@@ -98,7 +99,7 @@ namespace UnitTests.WebApi.Controllers
 
       _genericRepositoryMock.Verify(x => x.Update(FakeInvoice1), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());
-      Assert.AreEqual(FakeInvoice1, result.Value);
+      AssertInvoicesAreEqual(FakeInvoice1, result.Result.Value.InvoiceList.First());
     }
 
     [Test]
@@ -108,7 +109,7 @@ namespace UnitTests.WebApi.Controllers
 
       _genericRepositoryMock.Verify(x => x.CreateAsync(FakeInvoice1), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());
-      Assert.AreEqual(FakeInvoice1, result.Value);
+      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
     }
 
     [Test]
@@ -118,7 +119,7 @@ namespace UnitTests.WebApi.Controllers
 
       _genericRepositoryMock.Verify(x => x.Remove(FakeInvoice1), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());
-      Assert.AreEqual(FakeInvoice1, result.Value);
+      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
     }
 
     #endregion
@@ -156,6 +157,16 @@ namespace UnitTests.WebApi.Controllers
       mock.Setup(x => x.Convert(FakeInvoice1, "USD"));
 
       return mock;
+    }
+
+    private void AssertInvoicesAreEqual(Invoice expected, Invoice actual)
+    {
+      Assert.AreEqual(expected.invoiceId, actual.invoiceId);
+      Assert.AreEqual(expected.currency, actual.currency);
+      Assert.AreEqual(expected.dateIssued, actual.dateIssued);
+      Assert.AreEqual(expected.description, actual.description);
+      Assert.AreEqual(expected.amount, actual.amount);
+      Assert.AreEqual(expected.supplier, actual.supplier);
     }
 
     #endregion

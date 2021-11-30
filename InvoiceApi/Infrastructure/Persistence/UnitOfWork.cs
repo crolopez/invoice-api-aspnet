@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace InvoiceApi.Infrastructure.Persistence
 {
@@ -15,9 +16,9 @@ namespace InvoiceApi.Infrastructure.Persistence
       Context = context;
     }
 
-    public async void Commit()
+    public async Task<int> Commit()
     {
-      await Context.SaveChangesAsync();
+      return await Context.SaveChangesAsync();
     }
 
     public async void Dispose()
