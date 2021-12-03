@@ -34,31 +34,28 @@ namespace InvoiceApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<APIConfig>(Configuration.GetSection("Config"));
+            new IoC().AddDependencies(services);
+
             services.AddMvc(options =>
             {
-                options.OutputFormatters.Insert(0, new InvoiceOutputFormatter());
+                var serviceProvider = services.BuildServiceProvider();
+		        var invoiceOutputFormatter = serviceProvider.GetService<IInvoiceOutputFormatter>();
+                options.OutputFormatters.Insert(0, invoiceOutputFormatter);
             });
             services.AddControllers()
                 .ConfigureApiBehaviorOptions(options =>
                 {
+                    var serviceProvider = services.BuildServiceProvider();
+                    var invalidRequestOutputFormatter = serviceProvider.GetService<IInvalidRequestOutputFormatter>();
                     options.InvalidModelStateResponseFactory =
-                        InvalidRequestOutputFormatter.GetResponse;
+                        invalidRequestOutputFormatter.GetResponse;
                 })
                 .AddJsonOptions(options => {
                     options.JsonSerializerOptions.IgnoreNullValues = true;
                 });
-            /*
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "InvoiceApi", Version = "v1" });
-            });
-            */
 
             services.AddCors();
-
-            services.Configure<APIConfig>(Configuration.GetSection("Config"));
-
-            IoC.AddDependencies(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,10 +64,6 @@ namespace InvoiceApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                /*
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "InvoiceApi v1"));
-                */
             }
 
             app.Use((context, next) =>

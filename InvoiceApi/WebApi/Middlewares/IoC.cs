@@ -10,14 +10,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace InvoiceApi.WebApi.Middlewares
 {
-  public static class IoC
+  public class IoC
   {
-    public static IServiceCollection AddDependencies(this IServiceCollection services)
+    public IServiceCollection AddDependencies(IServiceCollection services)
     {
-      services.AddScoped<IExchangeService, ExchangeService>();
+      services.AddSingleton<IExchangeService, ExchangeService>();
       services.AddSingleton<IConversionProvider, ConversionProvider>();
 
       services.AddSingleton<IResponseFactory<Invoice>, InvoiceResponseFactory>();
+      services.AddSingleton<IInvalidRequestOutputFormatter, InvalidRequestOutputFormatter>();
+      services.AddSingleton<IInvoiceOutputFormatter, InvoiceOutputFormatter>();
 
       services.AddScoped<DbContext, InMemoryDbContext>();
       services.AddScoped<IUnitOfWork, AsyncUnitOfWork>();

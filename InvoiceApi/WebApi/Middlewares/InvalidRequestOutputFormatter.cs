@@ -9,12 +9,18 @@ using InvoiceApi.Core.Application.Contracts;
 
 namespace InvoiceApi.WebApi.Middlewares
 {
-  public static class InvalidRequestOutputFormatter
+  public class InvalidRequestOutputFormatter: IInvalidRequestOutputFormatter
   {
-    public static IActionResult GetResponse(ActionContext actionContext)
+    IResponseFactory<Invoice> _responseFactory;
+
+    public InvalidRequestOutputFormatter(IResponseFactory<Invoice> responseFactory)
     {
-      var responseFactory = DependencyResolver.GetService<IResponseFactory<Invoice>>();
-      var response = responseFactory.CreateErrorResponse(actionContext.ModelState);
+      _responseFactory = responseFactory;
+    }
+    public IActionResult GetResponse(ActionContext actionContext)
+    {
+      ///var responseFactory = new DependencyResolver().GetService<IResponseFactory<Invoice>>();
+      var response = _responseFactory.CreateErrorResponse(actionContext.ModelState);
       return new BadRequestObjectResult(response);
     }
   }

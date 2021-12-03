@@ -12,7 +12,7 @@ namespace UnitTests.Helpers
 
     public DependencyResolverHelper()
     {
-      _serviceProvider = ServiceProviderFactory.ServiceProvider;
+      _serviceProvider = new ServiceProviderFactory().ServiceProvider;
     }
 
     public T GetService<T>()

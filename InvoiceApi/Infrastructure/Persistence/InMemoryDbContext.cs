@@ -14,14 +14,8 @@ namespace InvoiceApi.Infrastructure.Persistence
     public DbSet<Invoice> Invoices { get; set; }
 
     public InMemoryDbContext()
-      : base(GetOptions())
+      : base(new DbContextOptionsBuilder().UseInMemoryDatabase(DatabaseName).Options)
     {
-    }
-
-    private static DbContextOptions GetOptions()
-    {
-      return new DbContextOptionsBuilder()
-        .UseInMemoryDatabase(DatabaseName).Options;
     }
   }
 }

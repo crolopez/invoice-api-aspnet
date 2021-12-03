@@ -16,23 +16,21 @@ namespace UnitTests.WebApi.Controllers
   {
     #region Common variables
 
-    private static readonly Lazy<Invoice> _fakeInvoice1 = new Lazy<Invoice>(() =>
+    private readonly Lazy<Invoice> _fakeInvoice1 = new Lazy<Invoice>(() =>
       new Invoice()
       {
         invoiceId = "FakeInvoiceId1"
       });
-    private static Invoice FakeInvoice1 => _fakeInvoice1.Value;
+    private Invoice FakeInvoice1 => _fakeInvoice1.Value;
 
-    private static readonly Lazy<Invoice> _fakeInvoice2 = new Lazy<Invoice>(() =>
+    private readonly Lazy<Invoice> _fakeInvoice2 = new Lazy<Invoice>(() =>
       new Invoice()
       {
         invoiceId = "FakeInvoiceId2"
       });
-    private static Invoice FakeInvoice2 => _fakeInvoice2.Value;
+    private Invoice FakeInvoice2 => _fakeInvoice2.Value;
 
-    private readonly Lazy<List<Invoice>> _invoiceList = new Lazy<List<Invoice>>(() =>
-      new List<Invoice>{ FakeInvoice1, FakeInvoice2 });
-    private List<Invoice> InvoiceList => _invoiceList.Value;
+    private List<Invoice> InvoiceList;
 
     private Mock<IGenericRepository<Invoice>> _genericRepositoryMock;
     private Mock<IUnitOfWork> _unitOfWorkMock;
@@ -47,6 +45,8 @@ namespace UnitTests.WebApi.Controllers
     [SetUp]
     protected void Setup()
     {
+      InvoiceList = new List<Invoice>{ FakeInvoice1, FakeInvoice2 };
+
       _genericRepositoryMock = InstallGenericRepositoryMock();
       _unitOfWorkMock = InstallUnitOfWorkMock();
       _exchangeServiceMock = InstallExchangeServiceMock();

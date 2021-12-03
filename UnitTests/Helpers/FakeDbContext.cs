@@ -15,7 +15,7 @@ namespace UnitTests.Helpers
     public DbSet<FakeModel> Data { get; set; }
 
     public FakeDbContext(List<FakeModel> dataList)
-      : base(GetOptions())
+      : base(new DbContextOptionsBuilder().UseInMemoryDatabase(DatabaseName).Options)
     {
       foreach (var value in dataList)
       {
@@ -36,12 +36,6 @@ namespace UnitTests.Helpers
 
       SaveChanges();
       base.Dispose();
-    }
-
-    private static DbContextOptions GetOptions()
-    {
-      return new DbContextOptionsBuilder()
-        .UseInMemoryDatabase(DatabaseName).Options;
     }
   }
 }

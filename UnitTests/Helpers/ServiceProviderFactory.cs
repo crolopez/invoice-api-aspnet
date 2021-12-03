@@ -7,14 +7,14 @@ using Microsoft.Extensions.Hosting.Internal;
 
 namespace UnitTests.Helpers
 {
-  internal static class ServiceProviderFactory
+  public class ServiceProviderFactory
   {
-    public static IServiceProvider ServiceProvider { get; }
+    public IServiceProvider ServiceProvider { get; }
 
-    static ServiceProviderFactory()
+    public ServiceProviderFactory()
     {
       ServiceCollection services = new ServiceCollection();
-      IoC.AddDependencies(services);
+      new IoC().AddDependencies(services);
       ServiceProvider = services.BuildServiceProvider();
     }
   }

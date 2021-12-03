@@ -17,12 +17,12 @@ using System.Threading.Tasks;
 
 namespace InvoiceApi.WebApi.Middlewares
 {
-    public class InvoiceOutputFormatter : TextOutputFormatter
+    public class InvoiceOutputFormatter : TextOutputFormatter, IInvoiceOutputFormatter
     {
         private readonly JsonSerializerOptions _jsonSettings;
         private readonly IResponseFactory<Invoice> _responseFactory;
 
-        public InvoiceOutputFormatter()
+        public InvoiceOutputFormatter(IResponseFactory<Invoice> responseFactory)
         {
             SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/json"));
             SupportedEncodings.Add(Encoding.UTF8);
@@ -31,7 +31,7 @@ namespace InvoiceApi.WebApi.Middlewares
             _jsonSettings = new JsonSerializerOptions();
             _jsonSettings.IgnoreNullValues = true;
 
-            _responseFactory = DependencyResolver.GetService<IResponseFactory<Invoice>>();
+            _responseFactory = responseFactory;
         }
 
         protected override bool CanWriteType(Type type)
