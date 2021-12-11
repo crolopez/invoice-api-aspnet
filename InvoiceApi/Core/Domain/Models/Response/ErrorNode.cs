@@ -2,12 +2,13 @@ namespace InvoiceApi.Core.Domain.Models.Response
 {
   public class ErrorNode
   {
-    public string id { get; private set; }
-    public string detail { get; private set; }
+    public string Id { get; private set; }
+    public string Detail { get; private set; }
 
-    public ErrorNode(string id, string detail) {
-      this.id = id;
-      this.detail = detail;
+    public ErrorNode(string id, string detail)
+    {
+      this.Id = id;
+      this.Detail = detail;
     }
   }
 }

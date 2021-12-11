@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
-using InvoiceApi.WebApi.Middlewares;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InvoiceApi.WebApi.Controllers
 {
@@ -19,8 +16,10 @@ namespace InvoiceApi.WebApi.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IExchangeService _exchangeService;
 
-        public InvoiceController(IGenericRepository<Invoice> genericRepository,
-            IUnitOfWork unitOfWork, IExchangeService exchangeService)
+        public InvoiceController(
+            IGenericRepository<Invoice> genericRepository,
+            IUnitOfWork unitOfWork,
+            IExchangeService exchangeService)
         {
             _genericRepository = genericRepository;
             _unitOfWork = unitOfWork;
@@ -60,9 +59,7 @@ namespace InvoiceApi.WebApi.Controllers
         {
             try
             {
-                Invoice? invoice = (await _genericRepository
-                    .GetAsync(x => x.invoiceId == id))?.First();
-
+                Invoice invoice = await GetInvoice(id);
                 if (invoice == null)
                 {
                     return GetNotFoundAction(id);
@@ -89,12 +86,12 @@ namespace InvoiceApi.WebApi.Controllers
         {
             try
             {
-                if (id != invoice.invoiceId)
+                if (id != invoice.InvoiceId)
                 {
                     return GetErrorAction(id, "Request ID doesn't match invoice ID.");
                 }
 
-                Invoice updatedInvoice = _genericRepository.Update(invoice);
+                Invoice updatedInvoice = await _genericRepository.Update(invoice);
                 if (updatedInvoice == null ||
                     (await _unitOfWork.Commit()) < 1)
                 {
@@ -118,14 +115,14 @@ namespace InvoiceApi.WebApi.Controllers
             {
                 Invoice savedInvoice = await _genericRepository.CreateAsync(invoice);
 
-                if(savedInvoice != null)
+                if (savedInvoice != null)
                     await _unitOfWork.Commit();
 
                 return new InvoiceAction(savedInvoice);
             }
             catch (Exception exception)
             {
-                return GetErrorAction(invoice.invoiceId, exception.Message);
+                return GetErrorAction(invoice.InvoiceId, exception.Message);
             }
         }
 
@@ -135,15 +132,15 @@ namespace InvoiceApi.WebApi.Controllers
         {
             try
             {
-                Invoice invoice = (await GetInvoice(id, null)).Value.InvoiceList.First();
+                Invoice invoice = await GetInvoice(id);
                 if (invoice == null)
                 {
                     return GetNotFoundAction(id);
                 }
 
-                invoice = _genericRepository.Remove(invoice);
+                invoice = await _genericRepository.Remove(invoice);
 
-                if(invoice != null)
+                if (invoice != null)
                     await _unitOfWork.Commit();
 
                 return new InvoiceAction(invoice);
@@ -161,11 +158,21 @@ namespace InvoiceApi.WebApi.Controllers
 
         private InvoiceAction GetErrorAction(string id, string error)
         {
-            var errorInvoice = new Invoice() {
-                invoiceId = id
+            var errorInvoice = new Invoice()
+            {
+                InvoiceId = id
             };
 
             return new InvoiceAction(errorInvoice, error);
+        }
+
+        private async Task<Invoice> GetInvoice(string id)
+        {
+            IEnumerable<Invoice> invoiceList = await _genericRepository.GetAsync(
+                    x => x.InvoiceId == id,
+                    x => x.OrderBy(x => x.InvoiceId));
+
+            return invoiceList.FirstOrDefault();
         }
     }
 }

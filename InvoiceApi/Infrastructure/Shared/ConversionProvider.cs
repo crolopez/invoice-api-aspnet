@@ -1,21 +1,23 @@
-﻿using System.Text;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
-using Newtonsoft.Json.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Options;
 using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
+using Microsoft.Extensions.Options;
 
 namespace InvoiceApi.Infrastructure.Shared
 {
-    public class ConversionProvider: IConversionProvider
+    public class ConversionProvider : IConversionProvider
     {
-        const string API_URL =
+        #pragma warning disable S1075 // URIs should not be hardcoded
+        private const string ApiUrl =
             "https://free.currconv.com/api/v7/" +
             "convert?apiKey={0}&q={1}_{2}&compact=y";
-        readonly string _apiKey;
+        #pragma warning restore S1075 // URIs should not be hardcoded
+
+        private readonly string _apiKey;
 
         public ConversionProvider(IOptions<APIConfig> config)
         {
@@ -48,16 +50,20 @@ namespace InvoiceApi.Infrastructure.Shared
         private string GetJsonResponse(string url)
         {
             WebRequest request = WebRequest.Create(url);
-            var streamReader = new StreamReader(request.GetResponse()
-                .GetResponseStream(), Encoding.ASCII);
+            var streamReader = new StreamReader(
+                request.GetResponse().GetResponseStream(),
+                Encoding.ASCII);
 
             return streamReader.ReadToEnd();
         }
 
         private string GetConversionUrl(string fromCurrency, string toCurrency)
         {
-            return string.Format(API_URL,
-                _apiKey, fromCurrency.ToUpper(), toCurrency.ToUpper());
+            return string.Format(
+                ApiUrl,
+                _apiKey,
+                fromCurrency.ToUpper(),
+                toCurrency.ToUpper());
         }
     }
 }

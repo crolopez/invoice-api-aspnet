@@ -1,20 +1,17 @@
-
-using System.Net.Mime;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using InvoiceApi.Core.Domain.Models.Response;
-using InvoiceApi.Core.Domain.Models;
-using InvoiceApi.Core.Application.Contracts;
 using System.Linq;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.Core.Domain.Models.Response;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace InvoiceApi.WebApi.Factories
 {
-  public class InvoiceResponseFactory: IResponseFactory<Invoice>
+  public class InvoiceResponseFactory : IResponseFactory<Invoice>
   {
     public Response<Invoice> CreateErrorResponse(string error, IEnumerable<Invoice> data)
     {
-      var errorNode = new ErrorNode(data.First().invoiceId, error);
+      var errorNode = new ErrorNode(data.First().InvoiceId, error);
       return new Response<Invoice>(new List<ErrorNode>() { errorNode });
     }
 
@@ -22,10 +19,12 @@ namespace InvoiceApi.WebApi.Factories
     {
       List<ErrorNode> errorList = new List<ErrorNode>();
 
-      foreach (string key in modelState.Keys) {
+      foreach (string key in modelState.Keys)
+      {
         ModelStateEntry errorEntry = modelState[key];
 
-        foreach (ModelError modelError in errorEntry.Errors) {
+        foreach (ModelError modelError in errorEntry.Errors)
+        {
           errorList.Add(new ErrorNode(key, errorEntry.Errors[0].ErrorMessage));
         }
       }
@@ -38,7 +37,8 @@ namespace InvoiceApi.WebApi.Factories
       List<InvoiceDataNode> dataNodeList;
       if (requestMethod == "DELETE")
       {
-          var dataNode = new InvoiceDataNode(data.First().invoiceId);
+          Invoice invoice = data.First();
+          var dataNode = new InvoiceDataNode(invoice.InvoiceId);
           dataNodeList = new List<InvoiceDataNode> { dataNode };
       }
       else

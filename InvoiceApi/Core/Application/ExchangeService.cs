@@ -1,12 +1,11 @@
 ﻿using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
-using System;
 
 namespace InvoiceApi.Core.Application
 {
-    public class ExchangeService: IExchangeService
+    public class ExchangeService : IExchangeService
     {
-        private IConversionProvider _conversionProvider;
+        private readonly IConversionProvider _conversionProvider;
 
         public ExchangeService(IConversionProvider conversionProvider)
         {
@@ -15,9 +14,9 @@ namespace InvoiceApi.Core.Application
 
         public void Convert(Invoice invoice, string currency)
         {
-            invoice.amount = invoice.amount *
-                _conversionProvider.Get(invoice.currency, currency);
-            invoice.currency = currency;
+            invoice.Amount = invoice.Amount *
+                _conversionProvider.Get(invoice.Currency, currency);
+            invoice.Currency = currency;
         }
     }
 }

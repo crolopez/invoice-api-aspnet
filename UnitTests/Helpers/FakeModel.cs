@@ -1,5 +1,3 @@
-using System;
-
 namespace UnitTests.Helpers
 {
     public class FakeModel

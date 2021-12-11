@@ -1,7 +1,6 @@
 using InvoiceApi.Core.Application;
 using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
-using InvoiceApi.Infrastructure;
 using InvoiceApi.Infrastructure.Persistence;
 using InvoiceApi.Infrastructure.Shared;
 using InvoiceApi.WebApi.Factories;
@@ -16,6 +15,8 @@ namespace InvoiceApi.WebApi.Middlewares
     {
       services.AddSingleton<IExchangeService, ExchangeService>();
       services.AddSingleton<IConversionProvider, ConversionProvider>();
+
+      services.AddSingleton<IJsonOptionsFactory, JsonOptionsFactory>();
 
       services.AddSingleton<IResponseFactory<Invoice>, InvoiceResponseFactory>();
       services.AddSingleton<IInvalidRequestOutputFormatter, InvalidRequestOutputFormatter>();

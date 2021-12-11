@@ -9,7 +9,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace InvoiceApi.Infrastructure.Persistence
 {
-  public class GenericRepository<T> : IGenericRepository<T> where T : class
+  public class GenericRepository<T> : IGenericRepository<T>
+    where T : class
   {
     private readonly IUnitOfWork _unitOfWork;
     public GenericRepository(IUnitOfWork unitOfWork)
@@ -22,8 +23,10 @@ namespace InvoiceApi.Infrastructure.Persistence
       return await _unitOfWork.Context.Set<T>().ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> whereCondition = null,
-                              Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
+    #nullable enable
+    public async Task<IEnumerable<T>> GetAsync(
+      Expression<Func<T, bool>>? whereCondition,
+      Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy)
     {
       IQueryable<T> query = _unitOfWork.Context.Set<T>();
 
@@ -36,6 +39,7 @@ namespace InvoiceApi.Infrastructure.Persistence
         ? await orderBy(query).ToListAsync()
         : await query.ToListAsync();
     }
+    #nullable disable
 
     public async Task<T> CreateAsync(T entity)
     {
@@ -43,16 +47,16 @@ namespace InvoiceApi.Infrastructure.Persistence
       return entry.Entity;
     }
 
-    public T Update(T entity)
+    public Task<T> Update(T entity)
     {
       EntityEntry<T> entry = _unitOfWork.Context.Set<T>().Update(entity);
-      return entry.Entity;
+      return Task.FromResult(entry.Entity);
     }
 
-    public T Remove(T entity)
+    public Task<T> Remove(T entity)
     {
       EntityEntry<T> entry = _unitOfWork.Context.Set<T>().Remove(entity);
-      return entry.Entity;
+      return Task.FromResult(entry.Entity);
     }
   }
 }

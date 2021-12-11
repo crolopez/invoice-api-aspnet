@@ -1,24 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.WebApi.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Mime;
-using Microsoft.Extensions.Options;
-using InvoiceApi.Core.Domain.Models;
-using InvoiceApi.Core.Application.Contracts;
-using InvoiceApi.Infrastructure;
-using InvoiceApi.Core.Application;
-using InvoiceApi.Infrastructure.Shared;
-using InvoiceApi.WebApi.Middlewares;
 
 namespace InvoiceApi
 {
@@ -40,7 +27,7 @@ namespace InvoiceApi
             services.AddMvc(options =>
             {
                 var serviceProvider = services.BuildServiceProvider();
-		        var invoiceOutputFormatter = serviceProvider.GetService<IInvoiceOutputFormatter>();
+                var invoiceOutputFormatter = serviceProvider.GetService<IInvoiceOutputFormatter>();
                 options.OutputFormatters.Insert(0, invoiceOutputFormatter);
             });
             services.AddControllers()
@@ -51,8 +38,11 @@ namespace InvoiceApi
                     options.InvalidModelStateResponseFactory =
                         invalidRequestOutputFormatter.GetResponse;
                 })
-                .AddJsonOptions(options => {
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                .AddJsonOptions(options =>
+                {
+                    var serviceProvider = services.BuildServiceProvider();
+                    var jsonOptionsFactory = serviceProvider.GetService<IJsonOptionsFactory>();
+                    jsonOptionsFactory.CreateOptions(options.JsonSerializerOptions);
                 });
 
             services.AddCors();

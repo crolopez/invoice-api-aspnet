@@ -1,9 +1,6 @@
+using System.Threading.Tasks;
 using InvoiceApi.Core.Application.Contracts;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InvoiceApi.Infrastructure.Persistence
 {

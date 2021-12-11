@@ -5,4 +5,3 @@ namespace InvoiceApi.Core.Domain.Models
       public string CurrencyConverterKey { get; set; }
   }
 }
-

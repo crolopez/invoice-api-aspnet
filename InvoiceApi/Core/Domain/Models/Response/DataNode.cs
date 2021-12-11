@@ -2,20 +2,22 @@ namespace InvoiceApi.Core.Domain.Models.Response
 {
   public class DataNode<T>
   {
-    public string id { get; private set; }
-    public string type { get; private set; }
+    public string Id { get; private set; }
+    public string Type { get; private set; }
     #nullable enable
-    public T? attributes { get; private set; }
+    public T? Attributes { get; private set; }
 
-    public DataNode(string id, string type, T attributes) {
-      this.id = id;
-      this.type = type;
-      this.attributes = attributes;
+    public DataNode(string id, string type, T attributes)
+    {
+      this.Id = id;
+      this.Type = type;
+      this.Attributes = attributes;
     }
 
-    public DataNode(string id, string type) {
-      this.id = id;
-      this.type = type;
+    public DataNode(string id, string type)
+    {
+      this.Id = id;
+      this.Type = type;
     }
   }
 }

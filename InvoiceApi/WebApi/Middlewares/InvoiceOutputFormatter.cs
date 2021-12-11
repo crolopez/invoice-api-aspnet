@@ -1,19 +1,15 @@
-using InvoiceApi.Core.Application.Contracts;
-using InvoiceApi.Core.Domain.Models;
-using InvoiceApi.Core.Domain.Models.Response;
-using InvoiceApi.WebApi.Factories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.Core.Domain.Models.Response;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Net.Http.Headers;
 
 namespace InvoiceApi.WebApi.Middlewares
 {
@@ -22,14 +18,13 @@ namespace InvoiceApi.WebApi.Middlewares
         private readonly JsonSerializerOptions _jsonSettings;
         private readonly IResponseFactory<Invoice> _responseFactory;
 
-        public InvoiceOutputFormatter(IResponseFactory<Invoice> responseFactory)
+        public InvoiceOutputFormatter(IResponseFactory<Invoice> responseFactory, IJsonOptionsFactory jsonOptionsFactory)
         {
             SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/json"));
             SupportedEncodings.Add(Encoding.UTF8);
             SupportedEncodings.Add(Encoding.Unicode);
 
-            _jsonSettings = new JsonSerializerOptions();
-            _jsonSettings.IgnoreNullValues = true;
+            _jsonSettings = jsonOptionsFactory.CreateOptions();
 
             _responseFactory = responseFactory;
         }
@@ -44,7 +39,7 @@ namespace InvoiceApi.WebApi.Middlewares
         {
             HttpContext httpContext = context.HttpContext;
             string method = httpContext.Request.Method;
-            var invoiceAction = (InvoiceAction) context.Object;
+            var invoiceAction = (InvoiceAction)context.Object;
             IEnumerable<Invoice> invoiceList = invoiceAction.InvoiceList;
 
             Response<Invoice> response = invoiceAction.Error == string.Empty
@@ -55,7 +50,8 @@ namespace InvoiceApi.WebApi.Middlewares
             await SerializeResponse(responseStream, response);
         }
 
-        private Task SerializeResponse(Stream responseStream, Response<Invoice> response) {
+        private Task SerializeResponse(Stream responseStream, Response<Invoice> response)
+        {
             return JsonSerializer.SerializeAsync(responseStream, response, _jsonSettings);
         }
     }

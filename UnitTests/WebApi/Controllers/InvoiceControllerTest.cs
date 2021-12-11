@@ -1,36 +1,33 @@
 using System;
-using NUnit.Framework;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using InvoiceApi.Core.Domain.Models;
-using InvoiceApi.Core.Application.Contracts;
-using InvoiceApi.WebApi.Controllers;
-using System.Linq.Expressions;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using InvoiceApi.Core.Application.Contracts;
+using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.WebApi.Controllers;
+using Moq;
+using NUnit.Framework;
 
 namespace UnitTests.WebApi.Controllers
 {
   public class InvoiceControllerTest
   {
-    #region Common variables
-
     private readonly Lazy<Invoice> _fakeInvoice1 = new Lazy<Invoice>(() =>
       new Invoice()
       {
-        invoiceId = "FakeInvoiceId1"
+        InvoiceId = "FakeInvoiceId1"
       });
     private Invoice FakeInvoice1 => _fakeInvoice1.Value;
 
     private readonly Lazy<Invoice> _fakeInvoice2 = new Lazy<Invoice>(() =>
       new Invoice()
       {
-        invoiceId = "FakeInvoiceId2"
+        InvoiceId = "FakeInvoiceId2"
       });
     private Invoice FakeInvoice2 => _fakeInvoice2.Value;
 
-    private List<Invoice> InvoiceList;
+    private List<Invoice> _invoiceList;
 
     private Mock<IGenericRepository<Invoice>> _genericRepositoryMock;
     private Mock<IUnitOfWork> _unitOfWorkMock;
@@ -38,22 +35,19 @@ namespace UnitTests.WebApi.Controllers
 
     private InvoiceController _controller;
 
-    #endregion
-
-    #region Test Methods
-
     [SetUp]
     protected void Setup()
     {
-      InvoiceList = new List<Invoice>{ FakeInvoice1, FakeInvoice2 };
+      _invoiceList = new List<Invoice> { FakeInvoice1, FakeInvoice2 };
 
       _genericRepositoryMock = InstallGenericRepositoryMock();
       _unitOfWorkMock = InstallUnitOfWorkMock();
       _exchangeServiceMock = InstallExchangeServiceMock();
 
-      _controller = new InvoiceController(_genericRepositoryMock.Object,
-                                          _unitOfWorkMock.Object,
-                                          _exchangeServiceMock.Object);
+      _controller = new InvoiceController(
+        _genericRepositoryMock.Object,
+        _unitOfWorkMock.Object,
+        _exchangeServiceMock.Object);
     }
 
     [Test]
@@ -61,13 +55,13 @@ namespace UnitTests.WebApi.Controllers
     {
       var result = await _controller.GetInvoices(null);
 
-      Assert.AreEqual(InvoiceList, result.Value.InvoiceList);
+      Assert.AreEqual(_invoiceList, result.Value.InvoiceList);
     }
 
     [Test]
     public async Task GetInvoicesMethodReturnsAllInvoicesInTheDesiredCurrency()
     {
-      var result = await _controller.GetInvoices("FakeCurrency");
+      await _controller.GetInvoices("FakeCurrency");
 
       _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice1, "FakeCurrency"), Times.Once());
       _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice2, "FakeCurrency"), Times.Once());
@@ -76,30 +70,32 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task GetInvoiceMethodReturnsTheDesiredInvoice()
     {
-      var result = await _controller.GetInvoice(FakeInvoice1.invoiceId, null);
+      var result = await _controller.GetInvoice(FakeInvoice1.InvoiceId, null);
 
-      _exchangeServiceMock.Verify(x => x
-        .Convert(It.IsAny<Invoice>(), It.IsAny<string>()), Times.Never());
-      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
+      var resultList = result.Value.InvoiceList;
+      _exchangeServiceMock.Verify(x => x.Convert(It.IsAny<Invoice>(), It.IsAny<string>()), Times.Never());
+      AssertInvoicesAreEqual(FakeInvoice1, resultList.First());
     }
 
     [Test]
     public async Task GetInvoiceMethodConvertsTheCurrency()
     {
-      var result = await _controller.GetInvoice(FakeInvoice1.invoiceId, "USD");
+      var result = await _controller.GetInvoice(FakeInvoice1.InvoiceId, "USD");
 
+      var resultList = result.Value.InvoiceList;
       _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice1, "USD"), Times.Once());
-      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
+      AssertInvoicesAreEqual(FakeInvoice1, resultList.First());
     }
 
     [Test]
-    public void PutInvoiceMethodUpdatesTheInvoice()
+    public async Task PutInvoiceMethodUpdatesTheInvoice()
     {
-      var result = _controller.PutInvoice(FakeInvoice1.invoiceId, FakeInvoice1);
+      var result = await _controller.PutInvoice(FakeInvoice1.InvoiceId, FakeInvoice1);
 
+      var resultList = result.Value.InvoiceList;
       _genericRepositoryMock.Verify(x => x.Update(FakeInvoice1), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());
-      AssertInvoicesAreEqual(FakeInvoice1, result.Result.Value.InvoiceList.First());
+      AssertInvoicesAreEqual(FakeInvoice1, resultList.First());
     }
 
     [Test]
@@ -107,38 +103,38 @@ namespace UnitTests.WebApi.Controllers
     {
       var result = await _controller.PostInvoice(FakeInvoice1);
 
+      var resultList = result.Value.InvoiceList;
       _genericRepositoryMock.Verify(x => x.CreateAsync(FakeInvoice1), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());
-      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
+      AssertInvoicesAreEqual(FakeInvoice1, resultList.First());
     }
 
     [Test]
     public async Task DeleteInvoiceMethodRemovesTheInvoice()
     {
-      var result = await _controller.DeleteInvoice(FakeInvoice1.invoiceId);
+      var result = await _controller.DeleteInvoice(FakeInvoice1.InvoiceId);
 
-      _genericRepositoryMock.Verify(x => x.Remove(FakeInvoice1), Times.Once());
+      var resultList = result.Value.InvoiceList;
+      _genericRepositoryMock.Verify(x => x.Remove(It.IsAny<Invoice>()), Times.Once());
       _unitOfWorkMock.Verify(x => x.Commit(), Times.Once());
-      AssertInvoicesAreEqual(FakeInvoice1, result.Value.InvoiceList.First());
+      AssertInvoicesAreEqual(FakeInvoice1, resultList.First());
     }
-
-    #endregion
-
-    #region Private methods
 
     private Mock<IGenericRepository<Invoice>> InstallGenericRepositoryMock()
     {
       var mock = new Mock<IGenericRepository<Invoice>>();
       mock.Setup(x => x.GetAsync())
-        .ReturnsAsync(InvoiceList);
-      mock.Setup(x => x.GetAsync(It.IsAny<Expression<Func<Invoice, bool>>>(), null))
+        .ReturnsAsync(_invoiceList);
+      mock.Setup(x => x.GetAsync(
+                          It.IsAny<Expression<Func<Invoice, bool>>>(),
+                          It.IsAny<Func<IQueryable<Invoice>, IOrderedQueryable<Invoice>>>()))
         .ReturnsAsync(new List<Invoice>() { FakeInvoice1 });
       mock.Setup(x => x.CreateAsync(FakeInvoice1))
         .ReturnsAsync(FakeInvoice1);
       mock.Setup(x => x.Update(FakeInvoice1))
-        .Returns(FakeInvoice1);
+        .ReturnsAsync(FakeInvoice1);
       mock.Setup(x => x.Remove(FakeInvoice1))
-        .Returns(FakeInvoice1);
+        .ReturnsAsync(FakeInvoice1);
 
       return mock;
     }
@@ -161,14 +157,12 @@ namespace UnitTests.WebApi.Controllers
 
     private void AssertInvoicesAreEqual(Invoice expected, Invoice actual)
     {
-      Assert.AreEqual(expected.invoiceId, actual.invoiceId);
-      Assert.AreEqual(expected.currency, actual.currency);
-      Assert.AreEqual(expected.dateIssued, actual.dateIssued);
-      Assert.AreEqual(expected.description, actual.description);
-      Assert.AreEqual(expected.amount, actual.amount);
-      Assert.AreEqual(expected.supplier, actual.supplier);
+      Assert.AreEqual(expected.InvoiceId, actual.InvoiceId);
+      Assert.AreEqual(expected.Currency, actual.Currency);
+      Assert.AreEqual(expected.DateIssued, actual.DateIssued);
+      Assert.AreEqual(expected.Description, actual.Description);
+      Assert.AreEqual(expected.Amount, actual.Amount);
+      Assert.AreEqual(expected.Supplier, actual.Supplier);
     }
-
-    #endregion
   }
 }

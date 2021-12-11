@@ -1,24 +1,18 @@
 using System;
-using NUnit.Framework;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using InvoiceApi.Core.Domain.Models;
 using InvoiceApi.Core.Application.Contracts;
-using InvoiceApi.WebApi.Controllers;
-using System.Linq.Expressions;
 using InvoiceApi.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using NUnit.Framework;
 using UnitTests.Helpers;
-using System.Linq;
 
 namespace UnitTests.WebApi.Controllers
 {
   public class GenericRepositoryTest
   {
-    #region Common variables
-
     private Mock<IUnitOfWork> _unitOfWorkMock;
 
     private FakeDbContext _fakeDbContext;
@@ -27,18 +21,15 @@ namespace UnitTests.WebApi.Controllers
 
     private List<FakeModel> _dataList;
 
-    #endregion
-
-    #region Test Methods
-
     [SetUp]
     protected void Setup()
     {
-      _dataList = new List<FakeModel>() {
-            new FakeModel("First", 1),
-            new FakeModel("Second", 2),
-            new FakeModel("Third", 3)
-          };
+      _dataList = new List<FakeModel>()
+      {
+        new FakeModel("First", 1),
+        new FakeModel("Second", 2),
+        new FakeModel("Third", 3)
+      };
 
       _fakeDbContext = new FakeDbContext(_dataList);
       _unitOfWorkMock = InstallUnitOfWorkMock();
@@ -82,7 +73,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task CreateAsyncMethodAddsAnEntryIfContextIsSaved()
     {
-      var entry = await _genericRepository.CreateAsync(
+      await _genericRepository.CreateAsync(
         new FakeModel("New entry", 0)
       );
       _fakeDbContext.SaveChanges();
@@ -95,7 +86,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task CreateAsyncMethodDoesntAddAnEntryIfContextIsNotSaved()
     {
-      var entry = await _genericRepository.CreateAsync(
+      await _genericRepository.CreateAsync(
         new FakeModel("New entry", 0)
       );
 
@@ -133,10 +124,6 @@ namespace UnitTests.WebApi.Controllers
       Assert.AreEqual(1, values.Count());
     }
 
-    #endregion
-
-    #region Private methods
-
     private Mock<IUnitOfWork> InstallUnitOfWorkMock()
     {
       var mock = new Mock<IUnitOfWork>();
@@ -145,7 +132,5 @@ namespace UnitTests.WebApi.Controllers
 
       return mock;
     }
-
-    #endregion
   }
 }

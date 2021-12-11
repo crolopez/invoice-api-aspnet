@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace InvoiceApi.Core.Application.Contracts
 {
-  public interface IGenericRepository<T> where T : class
+  public interface IGenericRepository<T>
+    where T : class
   {
     Task<IEnumerable<T>> GetAsync();
-    Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> whereCondition = null,
-                        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
+    Task<IEnumerable<T>> GetAsync(
+      Expression<Func<T, bool>> whereCondition,
+      Func<IQueryable<T>,
+      IOrderedQueryable<T>> orderBy);
     Task<T> CreateAsync(T entity);
-    T Update(T entity);
-    T Remove(T entity);
+    Task<T> Update(T entity);
+    Task<T> Remove(T entity);
   }
 }

@@ -1,16 +1,12 @@
-using InvoiceApi.Core.Application.Contracts;
-using InvoiceApi.Core.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace UnitTests.Helpers
 {
   public class FakeDbContext : DbContext
   {
-    const string DatabaseName = "FakeDb";
+    private const string DatabaseName = "FakeDb";
 
     public DbSet<FakeModel> Data { get; set; }
 
