@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvoiceApi.WebApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class InvoiceController : ControllerBase

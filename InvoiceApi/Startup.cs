@@ -1,11 +1,16 @@
 using InvoiceApi.Core.Application.Contracts;
 using InvoiceApi.Core.Domain.Models;
 using InvoiceApi.WebApi.Middlewares;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.Extensions.Options;
+using InvoiceApi.Core.Domain.Models.Config;
+using IdentityServer4;
 
 namespace InvoiceApi
 {
@@ -23,29 +28,44 @@ namespace InvoiceApi
         {
             services.Configure<APIConfig>(Configuration.GetSection("Config"));
             new IoC().AddDependencies(services);
+            var serviceProvider = services.BuildServiceProvider();
 
             services.AddMvc(options =>
             {
-                var serviceProvider = services.BuildServiceProvider();
                 var invoiceOutputFormatter = serviceProvider.GetService<IInvoiceOutputFormatter>();
                 options.OutputFormatters.Insert(0, invoiceOutputFormatter);
             });
             services.AddControllers()
                 .ConfigureApiBehaviorOptions(options =>
                 {
-                    var serviceProvider = services.BuildServiceProvider();
                     var invalidRequestOutputFormatter = serviceProvider.GetService<IInvalidRequestOutputFormatter>();
                     options.InvalidModelStateResponseFactory =
                         invalidRequestOutputFormatter.GetResponse;
                 })
                 .AddJsonOptions(options =>
                 {
-                    var serviceProvider = services.BuildServiceProvider();
                     var jsonOptionsFactory = serviceProvider.GetService<IJsonOptionsFactory>();
                     jsonOptionsFactory.CreateOptions(options.JsonSerializerOptions);
                 });
 
             services.AddCors();
+
+            services
+                .AddAuthentication(options =>
+                {
+                    //options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+                })
+                //.AddCookie()
+                .AddGoogle(options =>
+                {
+                    var config = serviceProvider.GetService<IOptions<APIConfig>>();
+                    var authConfig = config.Value.Auth.Google;
+                    options.ClientId = authConfig.ClientId;
+                    options.ClientSecret = authConfig.ClientSecret;
+                    //options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,6 +97,7 @@ namespace InvoiceApi
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

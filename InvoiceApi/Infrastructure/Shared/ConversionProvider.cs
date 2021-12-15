@@ -4,7 +4,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using InvoiceApi.Core.Application.Contracts;
-using InvoiceApi.Core.Domain.Models;
+using InvoiceApi.Core.Domain.Models.Config;
 using Microsoft.Extensions.Options;
 
 namespace InvoiceApi.Infrastructure.Shared
