@@ -8,11 +8,17 @@ Simple API REST to manage invoices with the purpose of gaining knowledge about A
 
 ## Configuration
 
-If you want to use the https://free.currconv.com service to retrieve invoices in a currency other than the one in which they were saved, you will have to modify the `appsetting` file to include the API Key to access this service.
+To configure the API you have to update the `appsetting` file with the following values:
+
+| Field | Description |
+|-|-|
+| **DatabaseConnectionString** `(required)` | Connection string from SQL Database Server |
+| **CurrencyConverterKey** | API key from https://free.currconv.com service |
 
 ``` json
   "Config": {
-    "CurrencyConverterKey": "XXXX"
+    "CurrencyConverterKey": "XXXX",
+    "DatabaseConnectionString": "YYYY"
   }
 ```
 

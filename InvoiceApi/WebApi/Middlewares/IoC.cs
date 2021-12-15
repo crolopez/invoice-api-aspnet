@@ -22,7 +22,7 @@ namespace InvoiceApi.WebApi.Middlewares
       services.AddSingleton<IInvalidRequestOutputFormatter, InvalidRequestOutputFormatter>();
       services.AddSingleton<IInvoiceOutputFormatter, InvoiceOutputFormatter>();
 
-      services.AddScoped<DbContext, InMemoryDbContext>();
+      services.AddScoped<DbContext, InvoiceDbContext>();
       services.AddScoped<IUnitOfWork, AsyncUnitOfWork>();
       services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
