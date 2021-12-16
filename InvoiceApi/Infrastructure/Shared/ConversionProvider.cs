@@ -28,6 +28,11 @@ namespace InvoiceApi.Infrastructure.Shared
         {
             string url = GetConversionUrl(fromCurrency, toCurrency);
             string jsonResponse = GetJsonResponse(url);
+
+            if (jsonResponse == "{}")
+            {
+                return 0;
+            }
             var conversion = GetConversionValue(jsonResponse);
 
             var amount = double.Parse(conversion);

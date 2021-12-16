@@ -16,14 +16,16 @@ namespace UnitTests.WebApi.Controllers
     private readonly Lazy<Invoice> _fakeInvoice1 = new Lazy<Invoice>(() =>
       new Invoice()
       {
-        InvoiceId = "FakeInvoiceId1"
+        InvoiceId = "FakeInvoiceId1",
+        Currency = "USD"
       });
     private Invoice FakeInvoice1 => _fakeInvoice1.Value;
 
     private readonly Lazy<Invoice> _fakeInvoice2 = new Lazy<Invoice>(() =>
       new Invoice()
       {
-        InvoiceId = "FakeInvoiceId2"
+        InvoiceId = "FakeInvoiceId2",
+        Currency = "USD"
       });
     private Invoice FakeInvoice2 => _fakeInvoice2.Value;
 
@@ -61,10 +63,10 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task GetInvoicesMethodReturnsAllInvoicesInTheDesiredCurrency()
     {
-      await _controller.GetInvoices("FakeCurrency");
+      await _controller.GetInvoices("USD");
 
-      _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice1, "FakeCurrency"), Times.Once());
-      _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice2, "FakeCurrency"), Times.Once());
+      _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice1, "USD"), Times.Once());
+      _exchangeServiceMock.Verify(x => x.Convert(FakeInvoice2, "USD"), Times.Once());
     }
 
     [Test]
@@ -131,7 +133,7 @@ namespace UnitTests.WebApi.Controllers
         .ReturnsAsync(new List<Invoice>() { FakeInvoice1 });
       mock.Setup(x => x.CreateAsync(FakeInvoice1))
         .ReturnsAsync(FakeInvoice1);
-      mock.Setup(x => x.Update(FakeInvoice1))
+      mock.Setup(x => x.Update(It.IsAny<Invoice>()))
         .ReturnsAsync(FakeInvoice1);
       mock.Setup(x => x.Remove(FakeInvoice1))
         .ReturnsAsync(FakeInvoice1);
@@ -142,7 +144,7 @@ namespace UnitTests.WebApi.Controllers
     private Mock<IUnitOfWork> InstallUnitOfWorkMock()
     {
       var mock = new Mock<IUnitOfWork>();
-      mock.Setup(x => x.Commit());
+      mock.Setup(x => x.Commit()).ReturnsAsync(1);
 
       return mock;
     }
@@ -150,6 +152,7 @@ namespace UnitTests.WebApi.Controllers
     private Mock<IExchangeService> InstallExchangeServiceMock()
     {
       var mock = new Mock<IExchangeService>();
+      mock.Setup(x => x.IsValidCurrency("USD")).Returns(true);
       mock.Setup(x => x.Convert(FakeInvoice1, "USD"));
 
       return mock;

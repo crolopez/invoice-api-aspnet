@@ -12,6 +12,12 @@ namespace InvoiceApi.Core.Application
             _conversionProvider = conversionProvider;
         }
 
+        public bool IsValidCurrency(string currency)
+        {
+            var ratio = _conversionProvider.Get("USD", currency);
+            return ratio != 0;
+        }
+
         public void Convert(Invoice invoice, string currency)
         {
             invoice.Amount = invoice.Amount *

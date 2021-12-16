@@ -13,7 +13,7 @@ To configure the API you have to update the `appsetting` file with the following
 | Field | Description |
 |-|-|
 | **DatabaseConnectionString** `(required)` | Connection string from SQL Database Server |
-| **CurrencyConverterKey** | API key from https://free.currconv.com service |
+| **CurrencyConverterKey** `(required)` | API key from https://free.currconv.com service |
 
 ``` json
   "Config": {

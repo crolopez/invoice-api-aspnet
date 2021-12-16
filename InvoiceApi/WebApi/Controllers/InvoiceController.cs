@@ -37,6 +37,11 @@ namespace InvoiceApi.WebApi.Controllers
 
                 if (currency != null)
                 {
+                    if (!_exchangeService.IsValidCurrency(currency))
+                    {
+                        return GetInvalidCurrencyAction(string.Empty, currency);
+                    }
+
                     foreach (var i in invoices)
                     {
                         _exchangeService.Convert(i, currency);
@@ -67,6 +72,11 @@ namespace InvoiceApi.WebApi.Controllers
 
                 if (currency != null)
                 {
+                    if (!_exchangeService.IsValidCurrency(currency))
+                    {
+                        return GetInvalidCurrencyAction(id, currency);
+                    }
+
                     _exchangeService.Convert(invoice, currency);
                 }
 
@@ -91,6 +101,17 @@ namespace InvoiceApi.WebApi.Controllers
                     return GetErrorAction(id, "Request ID doesn't match invoice ID.");
                 }
 
+                if (await GetInvoice(id) == null)
+                {
+                    return GetNotFoundAction(id);
+                }
+
+                if (invoice.Currency == string.Empty ||
+                    !_exchangeService.IsValidCurrency(invoice.Currency))
+                {
+                    return GetInvalidCurrencyAction(id, invoice.Currency);
+                }
+
                 Invoice updatedInvoice = await _genericRepository.Update(invoice);
                 if (updatedInvoice == null ||
                     (await _unitOfWork.Commit()) < 1)
@@ -113,6 +134,17 @@ namespace InvoiceApi.WebApi.Controllers
         {
             try
             {
+                if (invoice.InvoiceId == string.Empty)
+                {
+                    return GetEmptyIdAction();
+                }
+
+                if (invoice.Currency == string.Empty ||
+                    !_exchangeService.IsValidCurrency(invoice.Currency))
+                {
+                    return GetInvalidCurrencyAction(invoice.InvoiceId, invoice.Currency);
+                }
+
                 Invoice savedInvoice = await _genericRepository.CreateAsync(invoice);
 
                 if (savedInvoice != null)
@@ -154,6 +186,18 @@ namespace InvoiceApi.WebApi.Controllers
         private InvoiceAction GetNotFoundAction(string id)
         {
             return GetErrorAction(id, "Invoice not found.");
+        }
+
+        private InvoiceAction GetEmptyIdAction()
+        {
+            return GetErrorAction(string.Empty, "Invoice ID cannot be empty.");
+        }
+
+        private InvoiceAction GetInvalidCurrencyAction(string id, string currency)
+        {
+            return currency == string.Empty
+                ? GetErrorAction(id, "Currency cannot be empty.")
+                : GetErrorAction(id, $"Invalid currency: {currency}.");
         }
 
         private InvoiceAction GetErrorAction(string id, string error)
