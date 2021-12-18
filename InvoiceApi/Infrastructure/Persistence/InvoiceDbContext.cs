@@ -16,9 +16,9 @@ namespace InvoiceApi.Infrastructure.Persistence
       Database.EnsureCreated();
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        options.UseSqlServer(_databaseConnectionString);
+        optionsBuilder.UseSqlServer(_databaseConnectionString);
     }
   }
 }

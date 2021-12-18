@@ -15,15 +15,18 @@ namespace InvoiceApi.WebApi.Controllers
         private readonly IGenericRepository<Invoice> _genericRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IExchangeService _exchangeService;
+        private readonly IErrorActionFactory _errorActionFactory;
 
         public InvoiceController(
             IGenericRepository<Invoice> genericRepository,
             IUnitOfWork unitOfWork,
-            IExchangeService exchangeService)
+            IExchangeService exchangeService,
+            IErrorActionFactory errorActionFactory)
         {
             _genericRepository = genericRepository;
             _unitOfWork = unitOfWork;
             _exchangeService = exchangeService;
+            _errorActionFactory = errorActionFactory;
         }
 
         // GET: api/Invoice
@@ -52,7 +55,7 @@ namespace InvoiceApi.WebApi.Controllers
             }
             catch (Exception exception)
             {
-                return GetErrorAction(string.Empty, exception.Message);
+                return _errorActionFactory.GetErrorAction(string.Empty, exception);
             }
         }
         #nullable disable
@@ -84,7 +87,7 @@ namespace InvoiceApi.WebApi.Controllers
             }
             catch (Exception exception)
             {
-                return GetErrorAction(id, exception.Message);
+                return _errorActionFactory.GetErrorAction(id, exception);
             }
         }
         #nullable disable
@@ -98,7 +101,7 @@ namespace InvoiceApi.WebApi.Controllers
             {
                 if (id != invoice.InvoiceId)
                 {
-                    return GetErrorAction(id, "Request ID doesn't match invoice ID.");
+                    return _errorActionFactory.GetErrorAction(id, "Request ID doesn't match invoice ID.");
                 }
 
                 if (await GetInvoice(id) == null)
@@ -116,14 +119,14 @@ namespace InvoiceApi.WebApi.Controllers
                 if (updatedInvoice == null ||
                     (await _unitOfWork.Commit()) < 1)
                 {
-                    return GetErrorAction(id, "The invoice couldn't be updated.");
+                    return _errorActionFactory.GetErrorAction(id, "The invoice couldn't be updated.");
                 }
 
                 return new InvoiceAction(updatedInvoice);
             }
             catch (Exception exception)
             {
-                return GetErrorAction(id, exception.Message);
+                return _errorActionFactory.GetErrorAction(id, exception);
             }
         }
 
@@ -154,7 +157,7 @@ namespace InvoiceApi.WebApi.Controllers
             }
             catch (Exception exception)
             {
-                return GetErrorAction(invoice.InvoiceId, exception.Message);
+                return _errorActionFactory.GetErrorAction(invoice.InvoiceId, exception);
             }
         }
 
@@ -179,35 +182,25 @@ namespace InvoiceApi.WebApi.Controllers
             }
             catch (Exception exception)
             {
-                return GetErrorAction(id, exception.Message);
+                return _errorActionFactory.GetErrorAction(id, exception);
             }
         }
 
         private InvoiceAction GetNotFoundAction(string id)
         {
-            return GetErrorAction(id, "Invoice not found.");
+            return _errorActionFactory.GetErrorAction(id, "Invoice not found.");
         }
 
         private InvoiceAction GetEmptyIdAction()
         {
-            return GetErrorAction(string.Empty, "Invoice ID cannot be empty.");
+            return _errorActionFactory.GetErrorAction(string.Empty, "Invoice ID cannot be empty.");
         }
 
         private InvoiceAction GetInvalidCurrencyAction(string id, string currency)
         {
             return currency == string.Empty
-                ? GetErrorAction(id, "Currency cannot be empty.")
-                : GetErrorAction(id, $"Invalid currency: {currency}.");
-        }
-
-        private InvoiceAction GetErrorAction(string id, string error)
-        {
-            var errorInvoice = new Invoice()
-            {
-                InvoiceId = id
-            };
-
-            return new InvoiceAction(errorInvoice, error);
+                ? _errorActionFactory.GetErrorAction(id, "Currency cannot be empty.")
+                : _errorActionFactory.GetErrorAction(id, $"Invalid currency: {currency}.");
         }
 
         private async Task<Invoice> GetInvoice(string id)

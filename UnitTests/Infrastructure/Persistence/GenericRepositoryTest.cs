@@ -98,7 +98,7 @@ namespace UnitTests.WebApi.Controllers
     public async Task UpdateMethodUpdatesAnEntryIfContextIsSaved()
     {
       _dataList[0].Value = 100;
-      _genericRepository.Update(_dataList[0]);
+      await _genericRepository.Update(_dataList[0]);
       _fakeDbContext.SaveChanges();
 
       var values = await _genericRepository.GetAsync(x => x.Id == "First", null);
@@ -108,7 +108,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task RemoveMethodRemovesAnEntryIfContextIsSaved()
     {
-      _genericRepository.Remove(_dataList[0]);
+      await _genericRepository.Remove(_dataList[0]);
       _fakeDbContext.SaveChanges();
 
       var values = await _genericRepository.GetAsync(x => x.Id == "First", null);
@@ -118,7 +118,7 @@ namespace UnitTests.WebApi.Controllers
     [Test]
     public async Task RemoveMethodDoesntRemoveAnEntryIfContextIsNotSaved()
     {
-      _genericRepository.Remove(_dataList[0]);
+      await _genericRepository.Remove(_dataList[0]);
 
       var values = await _genericRepository.GetAsync(x => x.Id == "First", null);
       Assert.AreEqual(1, values.Count());

@@ -34,6 +34,7 @@ namespace UnitTests.WebApi.Controllers
     private Mock<IGenericRepository<Invoice>> _genericRepositoryMock;
     private Mock<IUnitOfWork> _unitOfWorkMock;
     private Mock<IExchangeService> _exchangeServiceMock;
+    private Mock<IErrorActionFactory> _errorActionFactory;
 
     private InvoiceController _controller;
 
@@ -45,11 +46,14 @@ namespace UnitTests.WebApi.Controllers
       _genericRepositoryMock = InstallGenericRepositoryMock();
       _unitOfWorkMock = InstallUnitOfWorkMock();
       _exchangeServiceMock = InstallExchangeServiceMock();
+      _exchangeServiceMock = InstallExchangeServiceMock();
+      _errorActionFactory = InstallErrorActionFactoryMock();
 
       _controller = new InvoiceController(
         _genericRepositoryMock.Object,
         _unitOfWorkMock.Object,
-        _exchangeServiceMock.Object);
+        _exchangeServiceMock.Object,
+        _errorActionFactory.Object);
     }
 
     [Test]
@@ -154,6 +158,13 @@ namespace UnitTests.WebApi.Controllers
       var mock = new Mock<IExchangeService>();
       mock.Setup(x => x.IsValidCurrency("USD")).Returns(true);
       mock.Setup(x => x.Convert(FakeInvoice1, "USD"));
+
+      return mock;
+    }
+
+    private Mock<IErrorActionFactory> InstallErrorActionFactoryMock()
+    {
+      var mock = new Mock<IErrorActionFactory>();
 
       return mock;
     }

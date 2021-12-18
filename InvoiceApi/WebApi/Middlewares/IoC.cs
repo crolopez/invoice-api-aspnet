@@ -17,8 +17,9 @@ namespace InvoiceApi.WebApi.Middlewares
       services.AddSingleton<IConversionProvider, ConversionProvider>();
 
       services.AddSingleton<IJsonOptionsFactory, JsonOptionsFactory>();
-
+      services.AddSingleton<IErrorActionFactory, ErrorActionFactory>();
       services.AddSingleton<IResponseFactory<Invoice>, InvoiceResponseFactory>();
+
       services.AddSingleton<IInvalidRequestOutputFormatter, InvalidRequestOutputFormatter>();
       services.AddSingleton<IInvoiceOutputFormatter, InvoiceOutputFormatter>();
 

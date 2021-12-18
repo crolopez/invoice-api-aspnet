@@ -33,9 +33,10 @@ namespace InvoiceApi.Infrastructure.Shared
             {
                 return 0;
             }
-            var conversion = GetConversionValue(jsonResponse);
 
+            var conversion = GetConversionValue(jsonResponse);
             var amount = double.Parse(conversion);
+
             return Math.Round(amount, 2);
         }
 
