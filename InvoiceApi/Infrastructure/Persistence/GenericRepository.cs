@@ -28,7 +28,7 @@ namespace InvoiceApi.Infrastructure.Persistence
       Expression<Func<T, bool>>? whereCondition,
       Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy)
     {
-      IQueryable<T> query = _unitOfWork.Context.Set<T>();
+      IQueryable<T> query = _unitOfWork.Context.Set<T>().AsNoTracking();
 
       if (whereCondition != null)
       {
